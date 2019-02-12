@@ -4,7 +4,9 @@ function checkpassword($un, $pw){
 
     $servername = "sql1.njit.edu";
     $username = "ar664";
-    $password = "UMqgYbp3";
+    $passwordFile = fopen("password.txt","r");
+    $password = fgets($passwordFile);
+    fclose($passwordFile);
 
     //Create connection
     $conn = mysqli_connect($servername, $username, $password, $username);
