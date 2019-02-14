@@ -2,12 +2,12 @@
 
 function checkpassword($un, $pw){
 
-    $servername = "sql1.njit.edu";
+    $servername = "sql2.njit.edu";
     $username = "ar664";
-    $passwordFile = fopen("password.txt","r");
-    $password = fgets($passwordFile);
+    $password = file_get_contents("password.txt");
     fclose($passwordFile);
 
+    $password = trim($password);
     //Create connection
     $conn = mysqli_connect($servername, $username, $password, $username);
 
@@ -37,6 +37,7 @@ function checkpassword($un, $pw){
     }
     mysqli_close($conn);
 }
+
 
 try {
     if(isset($_POST["Username"]) && isset($_POST["Password"]))
