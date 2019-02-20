@@ -25,9 +25,8 @@ function checkpassword($un, $pw){
         // output data
         $row = mysqli_fetch_assoc($result);
         $myhash = bin2hex(hash("sha256", "$pw", "false"));
-        //echo "Name: " . $row["Username"]. " Hash: " . $row["Password"] . "\n";
         if($myhash == $row["Password"]) {
-            echo '{ "dbSuccess":true }';
+            echo '{ "dbSuccess":true, "dbType":"' . $row["Type"] . '" }';
         } else {
             echo '{ "dbSuccess":false }';
         }
