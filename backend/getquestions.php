@@ -40,17 +40,13 @@ if($ID != '' || $Question != '' || $Difficulty != '' || $Topic != '')
 {
     $sql="SELECT * from Questions";
 }
-echo $sql;
+//echo $sql;
 $result = mysqli_query($conn, $sql);
 
 if (mysqli_num_rows($result) > 0) {
     //output data of each row
     global $table;
-    $table = '{ "Test":"Test"';
-    while($row = mysqli_fetch_assoc($result)) {
-        $table = $table . ', {"ID": ' . $row["ID"] . ' , "Question":"' . $row["Question"] . '" , "Difficulty":"' . $row["Difficulty"] . '" , "TestCases":' . $row["TestCases"] . ' , "Topic":"' . $row["Topic"] . '" }';
-    }
-    $table = $table . '}';
+    include 'listquestions.php';
     echo $table;
 } else {
     echo "0 results: " . mysqli_error($conn);
