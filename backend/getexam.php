@@ -18,7 +18,6 @@ if (mysqli_num_rows($result) > 0)
     }
     $exam = $exam . "{}]";
     $sql2 = $sql2 . "ID IS NULL";
-    echo $sql2;
     $result = mysqli_query($conn, $sql2);
     if(mysqli_num_rows($result) > 0)
     {

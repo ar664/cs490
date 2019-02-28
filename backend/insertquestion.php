@@ -35,7 +35,7 @@ if(isset($result))
 }
 
 $sql="INSERT INTO Questions (ID, Question, Difficulty, TestCases, Topic) VALUES (" . $num_rows . ", '" . $_POST["Question"] . "', '" . $_POST["Difficulty"] . "', '" . $_POST["TestCases"] . "', '" . $_POST["Topic"] . "')";
-echo $sql;
+
 $result = mysqli_query($conn,$sql);
 $error = mysqli_error($conn);
 if($error)
