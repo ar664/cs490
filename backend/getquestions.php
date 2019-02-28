@@ -45,9 +45,9 @@ $result = mysqli_query($conn, $sql);
 
 if (mysqli_num_rows($result) > 0) {
     //output data of each row
-    global $table;
+    global $questions;
     include 'listquestions.php';
-    echo $table;
+    echo '{' . $questions . '}';
 } else {
     echo "0 results: " . mysqli_error($conn);
 }

@@ -2,8 +2,24 @@
 
 global $conn;
 
-if( !(isset($_POST["Question"]) && isset($_POST["Difficulty"]) && isset($_POST["TestCases"]) && isset($_POST["Topic"]) )) {
-    die("Post variables not set");
+if(!(isset($_POST["Question"])) 
+{
+    die("POST: Question not set");
+}
+
+if(!(isset($_POST["Difficulty"])) 
+{
+    die("POST: Difficulty not set");
+}
+
+if(!(isset($_POST["TestCases"])) 
+{
+    die("POST: TestCases not set");
+}
+
+if(!(isset($_POST["Topic"])) 
+{
+    die("POST: Topic not set");
 }
 
 include 'connect2.php';
@@ -32,11 +48,11 @@ $result = mysqli_query($conn, $sql);
 
 if (mysqli_num_rows($result) > 0) {
     //output data of each row
-    global $table; 
+    global $questions; 
     include 'listquestions.php';
-    echo $table;
+    echo '{' . $questions . '}';
 } else {
-    echo "0 results" . mysqli_error($conn);
+    echo "0 results: " . mysqli_error($conn);
 }
 
 mysqli_close($conn);
