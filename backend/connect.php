@@ -35,11 +35,11 @@ function checkpassword($un, $pw){
             }
             //echo '{ "dbSuccess":true, "dbType":"' . $row["Type"] . '" }';
         } else {
-            echo '{ "dbSuccess":false }';
+            echo '{ "dbSuccess":false, "Here1":true }';
         }
 
     } else {
-        echo '{ "dbSuccess":false }';
+        echo '{ "dbSuccess":false, "Here2": true }';
     }
     mysqli_close($conn);
 }
