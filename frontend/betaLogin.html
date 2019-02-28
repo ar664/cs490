@@ -25,12 +25,12 @@
                     if(isJson(this.responseText)) { // Tests if JSON
                         var response = this.responseText;
                         var test = JSON.parse(response);
-                        if(test.teacher){
-                            window.location.assign("teacher.html");
+                        if(test.Teacher){
+                           window.location.assign("teacher.html");
                         }
-                        else if(test.student) {
+                        else if(test.Student) {
                             window.location.assign("student.html");
-                        }
+                        }   
                         else {
                             document.getElementById("error").innerHTML = "Error Wrong Credentials.";
                         }

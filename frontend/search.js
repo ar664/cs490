@@ -1,43 +1,60 @@
 // Global variables
-var searchKeyword = true;
+var searchKeyword = false;
 var searchTopic = false;
 var searchDifficulty = false;
 var numCases = 2;
-var draftExam = [];
+var questionBank = [];
 var publishedExam = [];
+var request;
 
 // For searching through the question bank
 function query() {
     var xhttp = new XMLHttpRequest();
     
     // Checks which filters are on
-    var request = "query=true";
+    request = "query=true";
     if(searchKeyword) {
-        request = "&keyword=" + document.getElementById("s").value;
+        request = request + "&keyword=" + document.getElementById("s").value;
     }
     if(searchTopic) {
-        request = "&topic=" + document.getElementById("s").value;
+        request = request + "&topic=" + document.getElementById("s").value;
     }
     if(searchDifficulty) {
-        request = "&difficulty=" + document.getElementById("s").value;
+        request = request + "&difficulty=" + document.getElementById("s").value;
     }
 
     xhttp.onreadystatechange = function() {
         if(this.readyState == 4 && this.status == 200) {
             var JSONresults = this.responseText;
-            var searchResults = JSON.parse(JSONresults);
+            document.getElementById("testJs").innerHTML = JSONresults;
+            /*var resultsObj = JSON.parse(JSONresults);
+            var searchResults = resultsObj.Questions;
             document.getElementById("qResults").innerHTML = "";
-            for(q = 0; q < searchResults.length; q++) {
+            for(q = 0; q < searchResults.length-1; q++) {
+                if(!questionCache.includes(searchResults[q])) {
+                    questionCache.push(searchResults[q]);
+                }
                 var questionName = searchResults[q].Question;
                 var questionTopic = searchResults[q].Topic;
                 var questionDifficulty = searchResults[q].Difficulty;
                 var questionID = searchResults[q].ID;
-                document.getElementById("qResults").innerHTML += "<tr id=" + questionID + "><th>" + questionName + "</th> <th>" + questionTopic + "</th> <th>" + questionDifficulty + "</th><th><input type='text' style='visibility: hidden; width: 2rem;' id=" + questionID + "></th></tr>";
-            }
+                var questionTC = searchResults[q].TestCases;
+                var end = questionName + questionTopic + questionDifficulty + questionID;
+                for(p = 0; p < questionTC.length; p++) {
+                    end+=questionTC[p];
+                }
+                document.getElementById("testWork").innerHTML = end;
+                //document.getElementById("qResults").innerHTML += "<tr id=" + questionID + "><th>" + questionName + "</th> <th>" + questionTopic + "</th> <th>" + questionDifficulty + "</th><th><input type='text' style='visibility: hidden; width: 2rem;' id=" + questionID + "></th></tr>";
+            }*/
+        }
+        else {
+            document.getElementById("testPhp").innerHTML = this.readyState + " " +this.status;
         }
     }
-    xhttp.open("POST","frontCurl.php", true);
+    xhttp.open("POST","betaFrontCurl.php", true);
     xhttp.setRequestHeader("Content-Type","application/x-www-form-urlencoded");
+    document.getElementById("testPhp").innerHTML = "Hello";
+    document.getElementById("testJs").innerHTML = request;
     xhttp.send(request);
 }
 
@@ -91,7 +108,7 @@ function addQuestion() {
                     }
                 }
             }
-            xhttp.open("POST","frontCurl.php", true);
+            xhttp.open("POST","betaFrontCurl.php", true);
             xhttp.setRequestHeader("Content-Type","application/x-www-form-urlencoded");
             xhttp.send(addRequest);
         }
@@ -144,6 +161,7 @@ function examOn() {
     document.getElementById("makeExam").style.visibility = visible;
     for(k = 1; k < table.getElementsByTagName("tr").length; k++) {
         table.getElementsByTagName("tr")[k].addEventListener("click", addToExam);
+        table.getElementsByTagName("tr")[k].getElementById("points")
     }
 }
 function examOff() {
@@ -166,7 +184,7 @@ function loadExam() {
     }
     else {
         for(n = 0; n < publishedExam.length; n++) {
-
+            var curNode = document.createElement("p");
         }
     }
 }
