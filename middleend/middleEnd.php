@@ -2,15 +2,15 @@
 
 $username = $_POST['Username'];
 $password = $_POST['Password'];
-
+$studntAnswer= $_POST['Response'];
 if (isset($username) && isset($password)){
 	class Student {
 		function Student() {
 		$this->dbSuccess = false;
-		$this->dbType="student";
+		$this->Student="false";
+		$this->Teacher="false";
 	}  
     }
-
 	$Dummy = new Student();   
 
 	// MAKE DB Login Call
@@ -24,12 +24,10 @@ if (isset($username) && isset($password)){
 
 	$db_json_res = json_decode($db_result, TRUE);
 	$Dummy->dbSuccess = $db_json_res['dbSuccess'];
-	$Dummy->dbType= $db_json_res['dbType'];
+	$Dummy->Student = $db_json_res['Student'];
+        $Dummy->Teacher = $db_json_res['Teacher'];
  	echo json_encode($Dummy);
 	curl_close($ch1);
-
-	//Tell me your Account Type
-
 } else {
 	echo "Username and Password not set in POST FIELDS\n";
 }
