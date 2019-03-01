@@ -2,8 +2,24 @@
 
 global $conn;
 
-if( !(isset($_POST["Question"]) && isset($_POST["Answer"]) && isset($_POST["Difficulty"]) && isset($_POST["TestCases"]) && isset($_POST["Points"]) && isset($_POST["Topic"]) )) {
-    die("Post variables not set");
+if(!(isset($_POST["Question"])) 
+{
+    die("POST: Question not set");
+}
+
+if(!(isset($_POST["Difficulty"])) 
+{
+    die("POST: Difficulty not set");
+}
+
+if(!(isset($_POST["TestCases"])) 
+{
+    die("POST: TestCases not set");
+}
+
+if(!(isset($_POST["Topic"])) 
+{
+    die("POST: Topic not set");
 }
 
 include 'connect2.php';
@@ -18,8 +34,8 @@ if(isset($result))
     $num_rows = 1;
 }
 
-$sql="INSERT INTO Questions (ID, Question, Answer, Difficulty, TestCases, Points, Topic) VALUES (" . $num_rows . ", '" . $_POST["Question"] . "', '" . $_POST["Answer"] . "', '" . $_POST["Difficulty"] . "', '" . $_POST["TestCases"] . "', " . $_POST["Points"] . ", '" . $_POST["Topic"] . "')";
-echo $sql;
+$sql="INSERT INTO Questions (ID, Question, Difficulty, TestCases, Topic) VALUES (" . $num_rows . ", '" . $_POST["Question"] . "', '" . $_POST["Difficulty"] . "', '" . $_POST["TestCases"] . "', '" . $_POST["Topic"] . "')";
+
 $result = mysqli_query($conn,$sql);
 $error = mysqli_error($conn);
 if($error)
@@ -32,15 +48,11 @@ $result = mysqli_query($conn, $sql);
 
 if (mysqli_num_rows($result) > 0) {
     //output data of each row
-    global $table;
-    $table = '{ "Test":"Test"';
-    while($row = mysqli_fetch_assoc($result)) {
-        $table = $table . ', {"ID": ' . $row["ID"] . ' , "Question":"' . $row["Question"] . '" , "Answer":"' . $row["Answer"] . '" , "Difficulty":"' . $row["Difficulty"] . '" , "TestCases":' . $row["TestCases"] . ' , "Points":' . $row["Points"] . '}';
-    }
-    $table = $table . '}';
-    echo $table;
+    global $questions; 
+    include 'listquestions.php';
+    echo '{' . $questions . '}';
 } else {
-    echo "0 results";
+    echo "0 results: " . mysqli_error($conn);
 }
 
 mysqli_close($conn);

@@ -26,28 +26,34 @@ function checkpassword($un, $pw){
         $row = mysqli_fetch_assoc($result);
         $myhash = bin2hex(hash("sha256", "$pw", "false"));
         if($myhash == $row["Password"]) {
-            echo '{ "dbSuccess":true, "dbType":"' . $row["Type"] . '" }';
+            if($row["Type"] == "Student")
+            {
+                echo '{ "dbSuccess":true, "Student":true, "Teacher":false }';
+            } else 
+            {
+                echo '{ "dbSuccess":true, "Student":false, "Teacher":true }';
+            }
+            //echo '{ "dbSuccess":true, "dbType":"' . $row["Type"] . '" }';
         } else {
-            echo '{ "dbSuccess":false }';
+            echo '{ "dbSuccess":false, "Here1":true }';
         }
 
     } else {
-        echo '{ "dbSuccess":false }';
+        echo '{ "dbSuccess":false, "Here2": true }';
     }
     mysqli_close($conn);
 }
 
-
-try {
-    if(isset($_POST["Username"]) && isset($_POST["Password"]))
-    {
-        checkpassword($_POST["Username"], $_POST["Password"]);
-    } else {
-        echo "No post variables set";
-    }
-} 
-catch(Exception $e) {
-    echo "Did not send Post values Username & Password: " . $e->getMessage();
+if(!isset($_POST["Username"]))
+{
+    die("POST: Username not set");
 }
+
+if(!isset($_POST["Password"]))
+{
+    die("POST: Password not set");
+}
+
+checkpassword($_POST["Username"], $_POST["Password"]);
 
 ?>
