@@ -5,7 +5,7 @@
         $us = $_POST["Username"];
         $pw = $_POST["Password"];
         
-        curl_setopt($req, CURLOPT_URL,"https://web.njit.edu/~amp85/middleCurlsRevised.php");
+        curl_setopt($req, CURLOPT_URL,"https://web.njit.edu/~amp85/cs490/middleend/middleEnd.php");
         curl_setopt($req, CURLOPT_POST, 1);
         curl_setopt($req, CURLOPT_POSTFIELDS,"Username=" . $us . "&Password=" . $pw);
 

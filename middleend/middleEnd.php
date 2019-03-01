@@ -7,13 +7,14 @@ if (isset($username) && isset($password)){
 	class Student {
 		function Student() {
 		$this->dbSuccess = false;
+		$this->dbType="student";
 	}  
     }
 
 	$Dummy = new Student();   
 
-	// MAKE DB Call
-	$url1 = "https://web.njit.edu/~ar664/connect.php";
+	// MAKE DB Login Call
+	$url1 = "https://web.njit.edu/~ar664/cs490/backend/connect.php";
 	$ch1 = curl_init($url1);
 
 	curl_setopt($ch1, CURLOPT_POST, TRUE);
@@ -22,9 +23,13 @@ if (isset($username) && isset($password)){
 	$db_result = curl_exec($ch1);
 
 	$db_json_res = json_decode($db_result, TRUE);
-	$Dummy->dbSuccess = $db_json_res['dbSuccess']; 
+	$Dummy->dbSuccess = $db_json_res['dbSuccess'];
+	$Dummy->dbType= $db_json_res['dbType'];
  	echo json_encode($Dummy);
 	curl_close($ch1);
+
+	//Tell me your Account Type
+
 } else {
 	echo "Username and Password not set in POST FIELDS\n";
 }
