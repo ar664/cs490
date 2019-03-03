@@ -26,14 +26,13 @@ function query() {
     xhttp.onreadystatechange = function() {
         if(this.readyState == 4 && this.status == 200) {
             var JSONresults = this.responseText;
-            document.getElementById("testJs").innerHTML = JSONresults;
-            /*var resultsObj = JSON.parse(JSONresults);
+            var resultsObj = JSON.parse(JSONresults);
             var searchResults = resultsObj.Questions;
             document.getElementById("qResults").innerHTML = "";
             for(q = 0; q < searchResults.length-1; q++) {
-                if(!questionCache.includes(searchResults[q])) {
+                /*if(!questionCache.includes(searchResults[q])) {
                     questionCache.push(searchResults[q]);
-                }
+                }*/
                 var questionName = searchResults[q].Question;
                 var questionTopic = searchResults[q].Topic;
                 var questionDifficulty = searchResults[q].Difficulty;
@@ -43,9 +42,9 @@ function query() {
                 for(p = 0; p < questionTC.length; p++) {
                     end+=questionTC[p];
                 }
-                document.getElementById("testWork").innerHTML = end;
-                //document.getElementById("qResults").innerHTML += "<tr id=" + questionID + "><th>" + questionName + "</th> <th>" + questionTopic + "</th> <th>" + questionDifficulty + "</th><th><input type='text' style='visibility: hidden; width: 2rem;' id=" + questionID + "></th></tr>";
-            }*/
+                //document.getElementById("testWork").innerHTML = end;
+                document.getElementById("qResults").innerHTML += "<tr id=" + questionID + "><th>" + questionName + "</th> <th>" + questionTopic + "</th> <th>" + questionDifficulty + "</th><th><input type='text' style='visibility: hidden; width: 2rem;' id=" + questionID + "></th></tr>";
+            }
         }
         else {
             document.getElementById("testPhp").innerHTML = this.readyState + " " +this.status;
