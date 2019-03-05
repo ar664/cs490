@@ -16,6 +16,7 @@ Password: <input type="password" name="Password" id="pw"><br>
 <p id="op1"></p>
 <p id="op2"></p>
 <p id="op3"></p>
+<p id="op4"></p>
 <script>
 function verify() {
 	var user = document.getElementById("us").value;
@@ -27,8 +28,9 @@ function verify() {
 				var response = this.responseText;
 				var test = JSON.parse(response);
 				if(test.dbSuccess){
-					document.getElementById("op2").innerHTML = "We approved.";
-					document.getElementById("op3").innerHTML= test.dbType;
+					document.getElementById("op2").innerHTML = "We approved.";	
+					document.getElementById("op3").innerHTML = "Teacher:" + test.Teacher;
+					document.getElementById("op4").innerHTML = "Student:" + test.Student;
 				} else {
 					document.getElementById("op2").innerHTML = "No.";
 				}
