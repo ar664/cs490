@@ -2,7 +2,7 @@
 
 if(!isset($_POST["QuestionID"]))
 {
-    die("POST: QuestionID not set");
+    die('{"POST":"QuestionID not set"}');
 }
 
 global $conn;
