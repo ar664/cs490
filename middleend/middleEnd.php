@@ -16,14 +16,13 @@ if (isset($username) && isset($password)){
 
  	echo $db_result;
 	curl_close($ch1);
-
 	//Tell me your Account Type
 
 } else if(isset($_POST["query"])) {
     $query = $_POST["query"];
     $url = "https://web.njit.edu/~ar664/cs490/backend/getquestions.php";
     if($query == "GetQuestions") {
-        $url = $url;
+        $url1 = $url;
     } else if ($query == "InsertQuestion") {
         $url = "https://web.njit.edu/~ar664/cs490/backend/insertquestion.php";
     } else if ($query == "DeleteQuestion") {
@@ -39,18 +38,44 @@ if (isset($username) && isset($password)){
     } else {
         echo "ERROR: Query not found";
     }
-    $ch1 = curl_init($url1);
-
-	curl_setopt($ch1, CURLOPT_POST, TRUE);
-	curl_setopt($ch1, CURLOPT_POSTFIELDS, http_build_query($_POST));
-	curl_setopt($ch1, CURLOPT_RETURNTRANSFER, TRUE); // store result in var
+    /*
+     $otherQueries=array('InsertQuestion','DeleteQuestion','InsertExamQuestion','UpdateExamQuestion','DeleteExamQuestion');
+     if ($_POST['query'] == 'GetQuestions' || $_POST['query'] == 'GetExam'){ 
+      $ch1 = curl_init($url);
+      curl_setopt($ch1, CURLOPT_RETURNTRANSFER, TRUE); // store result in var
+      $query_result = curl_exec($ch1);
+      echo $query_result;
+      curl_close($ch1);
+     } else if (in_array($_POST['query'], $otherQueries)){ 
+       $ch1 = curl_init($url);
+       curl_setopt($ch1, CURLOPT_POST, TRUE);
+       curl_setopt($ch1, CURLOPT_POSTFIELDS, http_build_query($_POST));
+       curl_setopt($ch1, CURLOPT_RETURNTRANSFER, TRUE); // store result in var
+       $query_result = curl_exec($ch1);
+       echo $query_result;
+       curl_close($ch1);
+     }
+   */
+     //Exam grading
+     $answer = $_POST['Answer'];
+     $points = $_POST['Points'];
+     echo 'Answer: ' . $answer . PHP_EOL;
+     //Array of json pairs
+     $tstCases = $_POST['TestCases'];
+     echo 'TestCases: ' . $tstCases  . PHP_EOL;
+     $foundNeedle= strpos($answer, "print");
+     if ($foundNeedle != false){ 
+       echo "Found a print statement on line " . $foundNeedle " of your answer";
+     }
     
-    $db_result = curl_exec($ch1);
-
-    echo $db_result;
-
-    curl_close($ch1);
-
+    
+     
+    /* $ch1 = curl_init($url);
+        curl_setopt($ch1, CURLOPT_RETURNTRANSFER, TRUE); // store result in var
+        $query_result = curl_exec($ch1);
+        echo $query_result;
+        curl_close($ch1);
+      */
 } else {
 	echo "Username and Password not set in POST FIELDS\n";
 }
