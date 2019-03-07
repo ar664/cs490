@@ -73,9 +73,13 @@
             border: none;
             border-collapse: unset;
         }
+        .selected {
+            background-color: black;
+            color: greenyellow;
+        }
     </style>
 </head>
-<body>
+<body onload="query()">
     <script src="search.js"></script>
     <div class="split left" name="leftPage">
         <div class="centered">
@@ -114,24 +118,26 @@
             Topic: <input type="text" name="topic" id="top" style="width: 15rem;">
             Difficulty: 
             <select name="difficulty" id="diff" size="1">
-                <option value="easy">Easy</option>
-                <option value="medium">Medium</option>
-                <option value="hard">Hard</option>
+                <option value="Easy">Easy</option>
+                <option value="Medium">Medium</option>
+                <option value="Hard">Hard</option>
             </select><br>
-            <h3>Question:</h3><textarea name="question" id="q" rows="20" cols="100" onkeydown="insertTab(this,event);"></textarea><br><br>
+            <h3>Function Name: <input type="text" id="functionName" style="width: 15rem;"><br>Question:</h3><textarea name="question" id="q" rows="20" cols="100" onkeydown="insertTab(this,event);"></textarea><br><br>
             <div style="text-align:left; font-size: 1.5rem;"><b>Test Cases</b></div>
+            
+            <!-- TEST CASES -->
             <table name="testCases" class="tcFields">
-                <tr name="input">
+                <tr id="input">
                     <th>Input</th>
                     <th><input type="text" name="test1" id="tc1"></th>
                     <th><input type="text" name="test2" id="tc2"></th>
-                    <td><button name="addTC" class="button tc" style="display:inline-block" onclick="addTC()" id="addButton">+</button></td> 
+                    <td id="addButton"><button name="addTC" class="button tc" style="display:inline-block" onclick="addTC()">+</button></td> 
                 </tr>
-                <tr name="output">
+                <tr id="output">
                     <th>Output</th>
                     <th><input type="text" name="result1" id="ans1"></th>
                     <th><input type="text" name="result2" id="ans2"></th>
-                    <td><button name="delTC" class="button tc rm" onclick="delTC()" id="delButton">-</button></td>
+                    <td id="delButton"><button name="delTC" class="button tc rm" onclick="delTC()">-</button></td>
                 </tr>
             </table><br><br>
             <button id="add" onclick="addQuestion()">Add Question</button><br><br>
@@ -141,20 +147,20 @@
     </div>
 
     <div class="split right" name="rightPage">
-        <div class="centered" onload="query()">
+        <div class="centered">
             <h2>Question Search</h2>
             <h3>
                 <input type="text" name="search" id="s" style="width:15rem; font-size: 1.5rem; display:inline-block; vertical-align: middle; border: none;" >
                 <button onclick="query()" style="display:inline-block; vertical-align: middle; padding:0.375rem; font-size:1rem;">Search!</button>
                 <button id="examEdit" onclick="examOn()">Make Exam</button><br><br>
                 In: <input type="text" name="qTopic" id="t">
-                <button onclick="setTopic()" style="background-color: darkgoldenrod">Topic</button><br>
+                <button onclick="setTopic()">Topic</button><br>
                 Which is: <select name="qDifficulty" id="d" size="1">
                     <option value="easy">Easy</option>
                     <option value="medium">Medium</option>
                     <option value="hard">Hard</option>
                 </select>
-                <button onclick="setDifficulty()" style="background-color: crimson">Difficulty</button>
+                <button onclick="setDifficulty()">Difficulty</button>
             </h3>
             <table name="queryResults" class="query" id="qResults" style="text-align: left;">
                 <tr style="font-size: 1.5rem;">
@@ -166,6 +172,7 @@
             <button onclick="publishExam()" style="visibility: hidden" id="makeExam">Publish Exam</button>
             <p id="testWork"></p>
         </div>
+        <p id="version"></p>
     </div>
 </body>
 </html>
