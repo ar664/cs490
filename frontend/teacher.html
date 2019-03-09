@@ -153,23 +153,22 @@
                 <input type="text" name="search" id="s" style="width:15rem; font-size: 1.5rem; display:inline-block; vertical-align: middle; border: none;" >
                 <button onclick="query()" style="display:inline-block; vertical-align: middle; padding:0.375rem; font-size:1rem;">Search!</button>
                 <button id="examEdit" onclick="examOn()">Make Exam</button><br><br>
-                In: <input type="text" name="qTopic" id="t">
-                <button onclick="setTopic()">Topic</button><br>
+                In: <input type="text" name="qTopic" id="t"> (Topic) <br>
                 Which is: <select name="qDifficulty" id="d" size="1">
-                    <option value="easy">Easy</option>
-                    <option value="medium">Medium</option>
-                    <option value="hard">Hard</option>
+                    <option value ="" disabled selected>Difficulty</option>
+                    <option value="Easy">Easy</option>
+                    <option value="Medium">Medium</option>
+                    <option value="Hard">Hard</option>
                 </select>
-                <button onclick="setDifficulty()">Difficulty</button>
             </h3>
             <table name="queryResults" class="query" id="qResults" style="text-align: left;">
-                <tr style="font-size: 1.5rem;">
+                <th style="font-size: 1.5rem;">
                     <th>QUESTION</th>
                     <th>TOPIC</th>
                     <th>DIFFICULTY</th>
-                </tr>
+                </th>
             </table>
-            <button onclick="publishExam()" style="visibility: hidden" id="makeExam">Publish Exam</button>
+            <button onclick="addToExam()" style="visibility: hidden" id="makeExam">Publish Exam</button>
             <p id="testWork"></p>
         </div>
         <p id="version"></p>
