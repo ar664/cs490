@@ -309,7 +309,7 @@ function submitExam() {
     xhttp.setRequestHeader("Content-Type","application/x-www-form-urlencoded");
     xhttp.send(submitRequest);
 }
-=======
+======= // EVERYTHING BELOW IS OLD
 // Global variables
 var searchKeyword = false;
 var searchTopic = false;
