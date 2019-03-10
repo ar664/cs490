@@ -98,7 +98,7 @@ function addQuestion() {
         var question = document.getElementById("q").value;
         var difficulty = document.getElementById("diff").value;
         var topic = document.getElementById("top").value;
-        //var fName = document.getElementById("functionName").value;
+        var fName = document.getElementById("functionName").value;
         var testCases = [];
         for(i = 1; i < numCases+1; i++) {
             testCases.push("{input" + i + ":" + document.getElementById("tc" + i).value + "}");
@@ -106,12 +106,12 @@ function addQuestion() {
         }
 
         // If any fields are empty
-        if(question == null || question == "" || difficulty == null || difficulty == "" || topic == null || topic == "" || testCases == null || testCases == []) {
+        if(question == null || question == "" || difficulty == null || difficulty == "" || topic == null || topic == "" || testCases == null || testCases == [] || fName == null || fName == "") {
             document.getElementById("sysMsg").innerHTML = "All Fields are Required."
         }
         else {
             var xhttp = new XMLHttpRequest();
-            var addRequest = "query=InsertQuestion&Question=" + question + /*"&functionName=" + fName + */"&Difficulty=" + difficulty + "&Topic=" + topic + "&TestCases=" + JSON.stringify(testCases);
+            var addRequest = "query=InsertQuestion&Question=" + question + "&FunctionName=" + fName + "&Difficulty=" + difficulty + "&Topic=" + topic + "&TestCases=" + JSON.stringify(testCases);
             xhttp.onreadystatechange = function() {
                 if(this.readyState == 4 && this.status == 200) {
                     var echoed = this.responseText;
@@ -184,7 +184,7 @@ function examOn() {
     document.getElementById("testWork").innerHTML = "";
     var queryList = table.getElementsByTagName("tr");
     for(k = 1; k < queryList.length; k++) {
-        queryList[k].style.visibility = "visible";
+        queryList[k].childNodes[3].style.visibility = "visible";
         queryList[k].addEventListener("click", function(){this.classList.toggle("selected")} );
     }
 }
@@ -196,8 +196,8 @@ function examOff() {
     var queryList = table.getElementsByTagName("tr");
     for(m = 1; m < queryList.length; m++) {
         queryList[m].removeEventListener("click", function(){this.classList.toggle("selected")});
-        queryList[m].value = "";
-        queryList[m].style.visibility = "hidden";
+        queryList[m].childNodes[3].value = "";
+        queryList[m].childNodes[3].style.visibility = "hidden";
     }
     for(p = 0; p < table.getElementByClassName("selected").length; p++) {
         table.getElementByClassName("selected")[p].classList.toggle("selected");
@@ -261,6 +261,7 @@ function loadExam() {
     }
     else {
         document.getElementById("studentSubmit").style.visibility = "visible";
+        document.getElementById("subMsg").style.visibility = "visible";
         var page = document.getElementById("fullExam");
         for(n = 0; n < exam.length; n++) {
             var curNode = document.createElement("P");
@@ -281,7 +282,29 @@ function loadExam() {
 // For submitting the exam
 function submitExam() {
     var ansList = document.getElementsByTagName("textarea");
+    var studentAnswers = [];
     for(se = 0; se < ansList.length; se++) {
-        
+        studentAnswers.push("{qID" + se + ":" + ansList[se].id + "}");
+        studentAnswers.push("{answer" + se + ":" + ansList[se].value + "}");
     }
+    var xhttp = new XMLHttpRequest();
+    var submitRequest = "query=UpdateExamQuestion&answers=" + JSON.stringify(studentAnswers);
+    xhttp.onreadystatechange = function() {
+        if(this.readyState == 4 && this.status == 200) {
+            var sEchoJSON = this.responseText;
+            var sEcho = JSON.parse(sEchoJSON);
+            if(sEcho.dbSuccess) {
+                document.getElementById("system").innerHTML = "Answers Submitted! Grade will posted Later.";
+            }
+            else {
+                document.getElementById("system").innerHTML = "dbSuccess is false?"
+            }
+        }
+        else {
+            document.getElementById("erroring").innerHTML = this.readyState + " " + this.status;
+        }
+    }
+    xhttp.open("POST","betaFrontCurl.php", true);
+    xhttp.setRequestHeader("Content-Type","application/x-www-form-urlencoded");
+    xhttp.send(submitRequest);
 }
