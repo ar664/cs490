@@ -4,12 +4,12 @@ global $conn;
 
 if(!isset($_POST["QuestionID"]))
 {
-    echo "POST: QuestionID not set";
+    die('{"POST":"QuestionID not set"}');
 }
 
-if( !(isset($_POST["Points"])  || isset($_POST["PointsGiven"]) || isset($_POST["Points"]) || isset($_POST["AutoComments"]) || isset($_POST["TeacherComments"]) ))
+if( !(isset($_POST["Points"]) || isset($_POST["Answer"])  || isset($_POST["PointsGiven"]) || isset($_POST["Points"]) || isset($_POST["AutoComments"]) || isset($_POST["TeacherComments"]) ))
 {
-    die("POST: no variables set");
+    die('{"POST":"no variables set"}');
 }
 
 include 'connect2.php';
@@ -19,6 +19,15 @@ $sql = "UPDATE Exam SET ";
 if( isset($_POST["Points"]) )
 {
     $sql = $sql . " Points=" . $_POST["Points"];
+    if( isset($_POST["PointsGiven"]) || isset($_POST["Answer"]) || isset($_POST["AutoComments"]) || isset($_POST["TeacherComments"]) )
+    {
+        $sql = $sql . ",";
+    }
+}
+
+if( isset($_POST["Answer"]) )
+{
+    $sql = $sql . " Answer='" . $_POST["Answer"] . "'";
     if( isset($_POST["PointsGiven"]) || isset($_POST["AutoComments"]) || isset($_POST["TeacherComments"]) )
     {
         $sql = $sql . ",";

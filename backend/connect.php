@@ -46,12 +46,12 @@ function checkpassword($un, $pw){
 
 if(!isset($_POST["Username"]))
 {
-    die("POST: Username not set");
+    die('{"POST":"Username not set"}');
 }
 
 if(!isset($_POST["Password"]))
 {
-    die("POST: Password not set");
+    die('{"POST":"Password not set"}');
 }
 
 checkpassword($_POST["Username"], $_POST["Password"]);

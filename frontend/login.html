@@ -1,63 +1,61 @@
 <!DOCTYPE html>
 <html>
-    <head>
-        <title>Alpha</title>
-        <h1>FrontEnd</h1>
-    </head>
-    
-    <body>
-    <form>
-        UCID: <input type="text" name="Username" id="us"><br>
-        Password: <input type="password" name="Password" id="pw"><br>
-    </form>
+<head>
+<title>Alpha</title>
+<h1>FrontEnd</h1>
+</head>
 
-    <button type="submit" onclick="verify()">Login</button>
-    
-    <p id="op1"></p>
-    <p id="op2"></p>
+<body>
+<form>
+UCID: <input type="text" name="Username" id="us"><br>
+Password: <input type="password" name="Password" id="pw"><br>
+</form>
 
-    <script>
-        function verify() {
-            var user = document.getElementById("us").value;
-            var pass = document.getElementById("pw").value;
-            var xhttp = new XMLHttpRequest();
-            xhttp.onreadystatechange = function() {
-                if(this.readyState == 4 && this.status == 200) { // If everything is A-OK - Tell me the Echo
-                    if(isJson(this.responseText)) { // Tests if JSON
-                        var response = this.responseText;
-                        var test = JSON.parse(response);
-                        if(test.njitSuccess) {
-                        document.getElementById("op1").innerHTML = "NJIT-Approved!";
-                        }
-                        else {
-                            document.getElementById("op1").innerHTML = "NJIT-Denied!";
-                        }
-                        if(test.dbSuccess){
-                            document.getElementById("op2").innerHTML = "We approved.";
-                        }
-                        else {
-                            document.getElementById("op2").innerHTML = "No.";
-                        }
-                    }
-                    else { // If the response is not in JSON format
-                        document.getElementById("output").innerHTML = this.responseText;
-                    }
-                }
-            };
-            xhttp.open("POST", "frontCurl.php",true);
-            xhttp.setRequestHeader("Content-Type","application/x-www-form-urlencoded");
-            xhttp.send("Username=" + user + "&Password=" + pass);
-        }
-        function isJson(str) { // Json checking function
-            try {
-                JSON.parse(str);
-            }
-            catch (e) {
-                return false;
-            }
-            return true;
-        }
-    </script>
+<button type="submit" onclick="verify()">Login</button>
 
-    </body>
+<p id="op1"></p>
+<p id="op2"></p>
+<p id="op3"></p>
+<p id="op4"></p>
+<script>
+function verify() {
+	var user = document.getElementById("us").value;
+	var pass = document.getElementById("pw").value;
+	var xhttp = new XMLHttpRequest();
+	xhttp.onreadystatechange = function() {
+		if(this.status == 200) { // If everything is A-OK - Tell me the Echo
+			if(isJson(this.responseText)) { // Tests if JSON
+				var response = this.responseText;
+				var test = JSON.parse(response);
+				if(test.dbSuccess){
+					document.getElementById("op2").innerHTML = "We approved.";	
+					document.getElementById("op3").innerHTML = "Teacher:" + test.Teacher;
+					document.getElementById("op4").innerHTML = "Student:" + test.Student;
+				} else {
+					document.getElementById("op2").innerHTML = "No.";
+				}
+			}
+			else { // If the response is not in JSON format
+				document.getElementById("op2").innerHTML = this.responseText;
+			}
+		} else {
+			document.getElementById("op2").innerHTML = this.responseText;
+		}
+	};
+	xhttp.open("POST", "frontCurl.php",true);
+	xhttp.setRequestHeader("Content-Type","application/x-www-form-urlencoded");
+	xhttp.send("Username=" + user + "&Password=" + pass);
+}
+function isJson(str) { // Json checking function
+	try {
+		JSON.parse(str);
+	}
+	catch (e) {
+		return false;
+	}
+	return true;
+}
+</script>
+
+</body>
 </html>
