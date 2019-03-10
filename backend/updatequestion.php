@@ -4,12 +4,12 @@ global $conn;
 
 if( !isset($_POST["ID"]) )
 {
-    die("POST: ID not set");
+    die('{"POST":"ID not set"}');
 }
 
 if( !(isset($_POST["Question"]) || isset($_POST["Difficulty"]) || isset($_POST["TestCases"]) || isset($_POST["Topic"]) ) )
 {
-    die("POST: no variables set");
+    die('{"POST":"no variables set"}');
 }
 
 include 'connect2.php';

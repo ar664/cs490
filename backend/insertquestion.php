@@ -2,24 +2,24 @@
 
 global $conn;
 
-if(!(isset($_POST["Question"])) 
+if(!(isset($_POST["Question"])))
 {
-    die("POST: Question not set");
+    die('{"POST":"Question not set"}');
 }
 
-if(!(isset($_POST["Difficulty"])) 
+if(!(isset($_POST['Difficulty']))) 
 {
-    die("POST: Difficulty not set");
+    die('{"POST":"Difficulty not set"}');
 }
 
-if(!(isset($_POST["TestCases"])) 
+if(!(isset($_POST['TestCases'])))
 {
-    die("POST: TestCases not set");
+    die('{"POST":"TestCases not set"}');
 }
 
-if(!(isset($_POST["Topic"])) 
+if(!(isset($_POST['Topic'])))
 {
-    die("POST: Topic not set");
+    die('{"POST":"Topic not set"}');
 }
 
 include 'connect2.php';
@@ -40,19 +40,9 @@ $result = mysqli_query($conn,$sql);
 $error = mysqli_error($conn);
 if($error)
 {
-    echo "SQL ERROR: " . $error;
-}
-
-$sql="SELECT * from Questions";
-$result = mysqli_query($conn, $sql);
-
-if (mysqli_num_rows($result) > 0) {
-    //output data of each row
-    global $questions; 
-    include 'listquestions.php';
-    echo '{' . $questions . '}';
+    echo '{ "dbSuccess":false, "SQL_ERROR":' . json_encode($error) . '}';
 } else {
-    echo "0 results: " . mysqli_error($conn);
+    echo '{ "dbSuccess":true }';
 }
 
 mysqli_close($conn);
