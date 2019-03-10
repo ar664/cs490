@@ -19,10 +19,9 @@ if (isset($username) && isset($password)){
 	//Tell me your Account Type
 
 } else if(isset($_POST["query"])) {
-    $query = $_POST["query"];
-    $url = "https://web.njit.edu/~ar664/cs490/backend/getquestions.php";
+    $query = $_POST["query"]; 
     if($query == "GetQuestions") {
-        $url1 = $url;
+        $url = "https://web.njit.edu/~ar664/cs490/backend/getquestions.php";
     } else if ($query == "InsertQuestion") {
         $url = "https://web.njit.edu/~ar664/cs490/backend/insertquestion.php";
     } else if ($query == "DeleteQuestion") {
@@ -37,45 +36,94 @@ if (isset($username) && isset($password)){
         $url = "https://web.njit.edu/~ar664/cs490/backend/deleteexamquestions.php";
     } else {
         echo "ERROR: Query not found";
+	var_dump($output);
     }
-    /*
-     $otherQueries=array('InsertQuestion','DeleteQuestion','InsertExamQuestion','UpdateExamQuestion','DeleteExamQuestion');
-     if ($_POST['query'] == 'GetQuestions' || $_POST['query'] == 'GetExam'){ 
-      $ch1 = curl_init($url);
-      curl_setopt($ch1, CURLOPT_RETURNTRANSFER, TRUE); // store result in var
-      $query_result = curl_exec($ch1);
-      echo $query_result;
-      curl_close($ch1);
-     } else if (in_array($_POST['query'], $otherQueries)){ 
-       $ch1 = curl_init($url);
-       curl_setopt($ch1, CURLOPT_POST, TRUE);
-       curl_setopt($ch1, CURLOPT_POSTFIELDS, http_build_query($_POST));
-       curl_setopt($ch1, CURLOPT_RETURNTRANSFER, TRUE); // store result in var
-       $query_result = curl_exec($ch1);
-       echo $query_result;
-       curl_close($ch1);
-     }
-   */
-     //Exam grading
-     $answer = $_POST['Answer'];
-     $points = $_POST['Points'];
-     echo 'Answer: ' . $answer . PHP_EOL;
-     //Array of json pairs
-     $tstCases = $_POST['TestCases'];
-     echo 'TestCases: ' . $tstCases  . PHP_EOL;
-     $foundNeedle= strpos($answer, "print");
-     if ($foundNeedle != false){ 
-       echo "Found a print statement on line " . $foundNeedle " of your answer";
-     }
-    
-    
+      
+        $ch1 = curl_init($url);
+        curl_setopt($ch1, CURLOPT_POST, TRUE); // store result in var
+        curl_setopt($ch1, CURL_POSTFIELDS, http_build_query($_POST)); // store result in var
+        curl_setopt($ch1, CURLOPT_RETURNTRANSFER, TRUE); // store result in var 
+	$query_result = curl_exec($ch1);
+        curl_close($ch1);     
+     // echo $query_result;
+         
      
-    /* $ch1 = curl_init($url);
-        curl_setopt($ch1, CURLOPT_RETURNTRANSFER, TRUE); // store result in var
-        $query_result = curl_exec($ch1);
-        echo $query_result;
-        curl_close($ch1);
-      */
+     //Exam grading
+     if (isset($_POST['Answer'])){ 
+        $url2 = "https://web.njit.edu/~ar664/cs490/backend/getexam.php";
+        $ch2 = curl_init($url2);
+	$pointsGiven=$_POST['Points'];
+	$output=array();
+	$pyBinPath=exec('which python');
+	$scriptPath= exec('pwd');
+	exec($pyBinPath . ' ' . $scriptPath . '/importantWords.py' . ' 2>&1',  $output);
+	var_dump($output);
+        
+	//$_Post['Questions'] includes:
+	//  [ID],[Question],[Difficulty], [Topic] and an Arry
+	//  Arry:
+	//   Case1 .. Casen
+        
+	//  $_POST['Exam'] holds:
+	//  an Arry:
+	//   [Question],[PointsGiven], [Points] 
+	//   [AutoComments],[TeacherComments]
+
+	 $url2 = "https://web.njit.edu/~ar664/cs490/backend/getexam.php";
+         $ch2 = curl_init($url2);
+         curl_setopt($ch2, CURLOPT_POST, TRUE); // store result in var
+         curl_setopt($ch2, CURL_POSTFIELDS, http_build_query($_POST)); // store result in var
+         curl_setopt($ch2, CURLOPT_RETURNTRANSFER, TRUE); // store result in var 
+	 $json_exam = curl_exec($ch2);
+         $exam=json_decode($json_exam);
+	 $questionDetails=$exam->Exam; //stored in here is a array full of json values 
+        
+	 $url3= "https://web.njit.edu/~ar664/cs490/backend/getquestions.php";
+	 $ch3 = curl_init($url3);
+         curl_setopt($ch3, CURLOPT_POST, TRUE); // store result in var
+	 curl_setopt($ch3, CURL_POSTFIELDS, http_build_query($_POST)); // store result in var
+	 curl_setopt($ch3, CURLOPT_RETURNTRANSFER, TRUE); // store result in var 
+	 $json_qst = curl_exec($ch3);
+	 $question = json_decode($json_qst);
+	 $questionInfo= $question; //stored in here is a array full of json values 
+         var_dump($questionInfo);  
+	/* foreach($questionDetails as $json_question){
+	     var_dump($json_question->QuestionID); 
+	      $questID=$json_question->QuestionID;
+	              = [$questID]
+	 }
+        */
+
+        curl_close($ch2);        
+	//Indentation Points: -3
+
+	//Forgot def Points: -5
+
+	//cheat print answer: 0
+     }
+    
+    
+    
+    /* $answer = $_POST['Answer'];
+       $pointsGiven= intval($_POST['Points']);
+       echo 'Answer: ' . $answer . PHP_EOL;
+       //Array of json pairs
+       $tstCases = $_POST['TestCases'];
+       echo 'TestCases: ' . $tstCases  . PHP_EOL;
+       $foundNeedle= strpos($answer, "print");
+       $foundNeedle= strpos($answer, "importantWords")
+       if ($foundNeedle != false){ 
+         echo "Found a print statement on line " . $foundNeedle " of your answer";
+         $pointsGiven -= 5;
+       } 
+       if ($foundNeedle != false){ 
+         echo "Function name is incorrect on line " . $foundNeedle " of your answer";
+         $pointsGiven -= 5;
+       }
+    */
+    
+   
+     
 } else {
 	echo "Username and Password not set in POST FIELDS\n";
 }
