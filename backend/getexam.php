@@ -16,7 +16,7 @@ if (mysqli_num_rows($result) > 0)
         $exam = $exam .'{"QuestionID": ' . $row["QuestionID"] . ' , "Points":' . $row["Points"] . ' , "PointsGiven":' . $row["PointsGiven"]  . ' , "AutoComments":' . json_encode($row["AutoComments"], JSON_UNESCAPED_UNICODE) . ' , "TeacherComments":' . json_encode($row["TeacherComments"], JSON_UNESCAPED_UNICODE) . '},';
         $sql2 = $sql2 . "ID=" . $row["QuestionID"] . " OR ";
     }
-    $exam = $exam . "{}]";
+    $exam = $exam . '{"Test":false}]';
     $sql2 = $sql2 . "ID IS NULL";
     $result = mysqli_query($conn, $sql2);
     if(mysqli_num_rows($result) > 0)
@@ -25,10 +25,10 @@ if (mysqli_num_rows($result) > 0)
         include 'listquestions.php';
         echo '{' . $exam . ',' . $questions . '}';
     } else {
-        echo "0 results: " . mysqli_error($conn);
+        echo '{ "dbSuccess":false, "SQL_ERROR":' . json_encode(mysqli_error($conn)) . '}';
     }
 } else {
-    echo "0 results: " . mysqli_error($conn);
+    echo '{ "dbSuccess":false, "SQL_ERROR":' . json_encode(mysqli_error($conn)) . '}';
 }
 
 mysqli_close($conn);
