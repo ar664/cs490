@@ -1,15 +1,17 @@
 // Global variables
+var examEditingOn = false;
 var numCases = 2;
 var publishedExam = [];
 
-// For searching through the question bank
+// For searching through the question bank (testing)
 function query() {
+
+    // To ensure cache is cleared
     document.getElementById("version").innerHTML = "Version 1.0.5";
 
     var xhttp = new XMLHttpRequest();
+    var request = "query=GetQuestions&Question=" + document.getElementById("s").value + "&Topic=" + document.getElementById("t").value + "&Difficulty=" + document.getElementById("d").value;
     
-    // Checks which filters are on
-    var request = "query=GetQuestions&question=" + document.getElementById("s").value + "&topic=" + document.getElementById("t").value + "&difficulty=" + document.getElementById("d").value;
     xhttp.onreadystatechange = function() {
         if(this.readyState == 4 && this.status == 200) {
             var JSONresults = this.responseText;
@@ -59,9 +61,17 @@ function query() {
                 rPointsBox.type = "text";
                 rPointsBox.style.visibility = "hidden";
                 rPointsBox.style.width = "2rem";
-
                 rPoints.appendChild(rPointsBox);
                 row.appendChild(rPoints);
+
+                var delQ = document.createElement("TH");
+                var delQBut = document.createElement("BUTTON");
+                delQBut.innerHTML = "X";
+                delQBut.className = "rm";
+                delQBut.onclick(delQuestion());
+                delQ.appendChild(delQBut);
+                row.appendChild(delQ);
+
                 queryTable.appendChild(row);
             }
         }
@@ -133,6 +143,39 @@ function addQuestion() {
     }
 }
 
+// Deleting a question (test!)
+function delQuestion(e) {
+    var xhttp = new XMLHttpRequest();
+
+    e = e || window.event;
+    var curTarget = e.srcElement || e.target;
+    while(curTarget && curTarget.tagName !== "TR") {
+        curTarget = curTarget.parentNode;
+    }
+    if(examEditingOn) {
+        rmFromExam(curTarget.id);
+        return;
+    }
+
+    else {
+        var xhttp = new XMLHttpRequest();
+        var delRequest = "query=DeleteQuestion&ID=" + curTarget.id;
+        xhttp.onreadystatechange = function() {
+            if(this.readyState == 4 && this.status == 200) {
+                var check = this.responseText;
+                document.getElementById("testWork").innerHTML = check;
+                query();
+            }
+            else {
+                document.getElementById("status").innerHTML = this.readyState + " " + this.status;
+            }
+        }
+        xhttp.open("POST","betaFrontCurl.php", true);
+        xhttp.setRequestHeader("Content-Type","application/x-www-form-urlencoded");
+        xhttp.send(delRequest);
+    }
+}
+
 // Adding more Test Case Fields
 function addTC() {
     if(numCases<6) {
@@ -175,8 +218,9 @@ function delTC() {
     }
 }
 
-// Toggle Exam Making Mode
+// Toggle Exam Making Mode (testing)
 function examOn() {
+    examEditingOn = true;
     var table = document.getElementById("queryResults");
     document.getElementById("examEdit").innerHTML = "Cancel Exam Creating";
     document.getElementById("examEdit").onclick = examOff();
@@ -185,17 +229,18 @@ function examOn() {
     var queryList = table.getElementsByTagName("tr");
     for(k = 1; k < queryList.length; k++) {
         queryList[k].childNodes[3].style.visibility = "visible";
-        queryList[k].addEventListener("click", function(){this.classList.toggle("selected")} );
+        queryList[k].addEventListener("click", select(e));
     }
 }
 function examOff() {
+    examEditingOn = false;
     var table = document.getElementById("queryResults");
     document.getElementById("examEdit").innerHTML = "Make Exam";
     document.getElementById("examEdit").onclick = examOn();
     document.getElementById("makeExam").style.visibility = "hidden";
     var queryList = table.getElementsByTagName("tr");
     for(m = 1; m < queryList.length; m++) {
-        queryList[m].removeEventListener("click", function(){this.classList.toggle("selected")});
+        queryList[m].removeEventListener("click", select(e));
         queryList[m].childNodes[3].value = "";
         queryList[m].childNodes[3].style.visibility = "hidden";
     }
@@ -204,12 +249,12 @@ function examOff() {
     }
 }
 
-// Adding Questions to the Exam and Posting It
+// Adding Questions to the Exam and Posting It (test)
 function addToExam() {
     var table = document.getElementById("queryResults");
     var examQuestions = table.getElementByClassName("selected");
     for(s = 0; s < examQuestions.length; s++) {
-        if(examQuestions[s].childNodes[3].value < 1) {
+        if(examQuestions[s].childNodes[3].value < 1 || examQuestions[s].childNodes[3].value == "") {
             document.getElementById("testWork").innerHTML = "Points Must Be Given to Each Selected Question.";
             break;
         }
@@ -239,7 +284,26 @@ function addToExam() {
     }
 }
 
-// Loading the exam for students
+// Removes a question from Exam (testing!)
+function rmFromExam(recvID) {
+    var xhttp = new XMLHttpRequest();
+    var delExamQReq = "query=DeleteExamQuestion&QuestionID=" + recvID;
+
+    xhttp.onreadystatechange = function() {
+        if(this.readyState == 4 && this.status == 200) {
+            var echoBack = this.responseText;
+            document.getElementById("testWork").innerHTML = echoBack;
+        }
+        else {
+            document.getElementById("status").innerHTML = this.readyState + " " + this.status;
+        }
+    }
+    xhttp.open("POST","betaFrontCurl.php", true);
+    xhttp.setRequestHeader("Content-Type","application/x-www-form-urlencoded");
+    xhttp.send(delExamQReq);
+}
+
+// Loading the exam for students (Testing)
 function loadExam() {
     var xhttp = new XMLHttpRequest();
     var exam = [];
@@ -248,9 +312,13 @@ function loadExam() {
         if(this.readyState == 4 && this.status == 200) {
             var examJSON = this.responseText;
             var examResults = JSON.parse(examJSON);
-            for(h = 0; h < examResults.length; h++) {
+            document.getElementById("erroring").innerHTML = examResults;
+            /*for(h = 0; h < examResults.length; h++) {
                 exam.push(examResults[h]);
-            }
+            }*/
+        }
+        else {
+            document.getElementById("system").innerHTML = this.readyState + " " + this.status;
         }
     }
     xhttp.open("POST","betaFrontCurl.php", true);
@@ -265,46 +333,80 @@ function loadExam() {
         var page = document.getElementById("fullExam");
         for(n = 0; n < exam.length; n++) {
             var curNode = document.createElement("P");
-            var curText = document.createTextNode(exam[n].Question);
+            var curText = document.createTextNode(exam[n].Question + "(" + exam[n].Points + " points)");
             curNode.appendChild(curText);
             page.appendChild(curNode);
 
             var ansNode = document.createElement("TEXTAREA");
             ansNode.rows = "20";
             ansNode.cols = "100";
+            ansNode.value = exam[n].Answer;
             ansNode.id = exam[n].ID;
             ansNode.onkeydown = "insertTab(this,event)";
             page.appendChild(ansNode);
+
+            var autoFeedback = document.createElement("P");
+            var autoFBText = document.createElement(exam[n].AutoComments);
+            autoFeedback.appendChild(autoFBText);
+            page.appendChild(autoFeedback);
+
+            var teacherFB = document.createElement("P");
+            var teacherFBText = document.createElement(exam[n].TeacherComments);
+            teacherFB.appendChild(teacherFBText);
+            page.appendChild(teacherFB);
+
+            var grade = document.createElement("P");
+            var gradeValue = document.createElement(exam[n].PointsGiven);
+            grade.appendChild(gradeValue);
+            page.appendChild(grade);
         }
     }
 }
 
-// For submitting the exam
+// For submitting the exam (testing)
 function submitExam() {
     var ansList = document.getElementsByTagName("textarea");
-    var studentAnswers = [];
+
+    // Testing variables (delete later)
+    var successes = 0;
+    var failures = 0;
+    var errors = 0;
+    var reqString = "";
+
     for(se = 0; se < ansList.length; se++) {
-        studentAnswers.push("{qID" + se + ":" + ansList[se].id + "}");
-        studentAnswers.push("{answer" + se + ":" + ansList[se].value + "}");
-    }
-    var xhttp = new XMLHttpRequest();
-    var submitRequest = "query=UpdateExamQuestion&answers=" + JSON.stringify(studentAnswers);
-    xhttp.onreadystatechange = function() {
-        if(this.readyState == 4 && this.status == 200) {
-            var sEchoJSON = this.responseText;
-            var sEcho = JSON.parse(sEchoJSON);
-            if(sEcho.dbSuccess) {
-                document.getElementById("system").innerHTML = "Answers Submitted! Grade will posted Later.";
+        var xhttp = new XMLHttpRequest();
+        var submitRequest = "query=UpdateExamQuestion&ID=" + ansList[se].id + "&Question=" + ansList[se].value;
+        reqString+= se + " " + submitRequest + "|";
+        xhttp.onreadystatechange = function() {
+            if(this.readyState == 4 && this.status == 200) {
+                var sEchoJSON = this.responseText;
+                var sEcho = JSON.parse(sEchoJSON);
+                if(sEcho.dbSuccess) {
+                    //document.getElementById("system").innerHTML = "Answers Submitted! Grade will posted Later.";
+                    successes++;
+                }
+                else {
+                    failures++;//document.getElementById("system").innerHTML = "dbSuccess is false?"
+                }
             }
             else {
-                document.getElementById("system").innerHTML = "dbSuccess is false?"
+                errors++;//document.getElementById("erroring").innerHTML = this.readyState + " " + this.status;
             }
         }
-        else {
-            document.getElementById("erroring").innerHTML = this.readyState + " " + this.status;
-        }
+        xhttp.open("POST","betaFrontCurl.php", true);
+        xhttp.setRequestHeader("Content-Type","application/x-www-form-urlencoded");
+        xhttp.send(submitRequest);
     }
-    xhttp.open("POST","betaFrontCurl.php", true);
-    xhttp.setRequestHeader("Content-Type","application/x-www-form-urlencoded");
-    xhttp.send(submitRequest);
+    document.getElementById("system").innerHTML = successes + " yes & " + failures + " no & " + errors + " errors";
+    document.getElementById("erroring").innerHTML = reqString;
+}
+
+// To enable user-friendly selection
+function select(e) {
+    e = e || window.event;
+    var target = e.srcElement || e.target;
+    while(target && target.nodeName !== "TR") {
+        target = target.parentNode;
+    }
+    target.classList.toggle("selected");
 }

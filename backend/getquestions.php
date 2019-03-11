@@ -20,7 +20,7 @@ if(isset($_POST["Question"]))
 
 if(isset($_POST["Difficulty"]))
 {
-    $Difficulty = 'Difficulty=' . $Difficulty;
+    $Difficulty = 'Difficulty="' . $_POST["Difficulty"] . '"';
 } else {
     $Difficulty = 'Difficulty REGEXP ".*"';
 }
@@ -49,7 +49,7 @@ if (mysqli_num_rows($result) > 0) {
     include 'listquestions.php';
     echo '{' . $questions . '}';
 } else {
-    echo "0 results: " . mysqli_error($conn);
+    echo '{ "dbSuccess":false, "SQL_ERROR":' . json_encode(mysqli_error($conn), JSON_UNESCAPED_UNICODE) . '}';
 }
 
 mysqli_close($conn);

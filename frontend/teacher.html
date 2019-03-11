@@ -65,9 +65,14 @@
         h3 {
             margin: 0.5rem;
         }
-        table,tr, th {
+        table, tr {
             border: 0.1rem solid black;
             border-collapse: collapse;
+            font-size: 1.5rem;
+        }
+        th {
+            width: 15rem;
+            border: 0.1rem solid black;
         }
         .tcFields {
             border: none;
@@ -161,17 +166,16 @@
                     <option value="Hard">Hard</option>
                 </select>
             </h3>
-            <table name="queryResults" class="query" id="qResults" style="text-align: left;">
-                <th style="font-size: 1.5rem;">
+            <table name="queryResults" id="qResults">
+                <tr>
                     <th>QUESTION</th>
                     <th>TOPIC</th>
                     <th>DIFFICULTY</th>
-                </th>
+                </tr>
             </table>
             <button onclick="addToExam()" style="visibility: hidden" id="makeExam">Publish Exam</button>
             <p id="testWork"></p>
-            <p id="testJs"></p>
-            <p id = "testPhp"></p>
+            <p id="status"></p>
         </div>
         <p id="version"></p>
     </div>
