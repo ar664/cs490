@@ -22,6 +22,11 @@ if(!(isset($_POST['Topic'])))
     die('{"POST":"Topic not set"}');
 }
 
+if(!(isset($_POST['FunctionName'])))
+{
+    die('{"POST":"FunctionName not set"}');
+}
+
 include 'connect2.php';
 
 $sql="SELECT * FROM Questions";
@@ -34,7 +39,7 @@ if(isset($result))
     $num_rows = 1;
 }
 
-$sql="INSERT INTO Questions (ID, Question, Difficulty, TestCases, Topic) VALUES (" . $num_rows . ", '" . $_POST["Question"] . "', '" . $_POST["Difficulty"] . "', '" . $_POST["TestCases"] . "', '" . $_POST["Topic"] . "')";
+$sql="INSERT INTO Questions (ID, Question, Difficulty, TestCases, Topic, FunctionName) VALUES (" . $num_rows . ", '" . $_POST["Question"] . "', '" . $_POST["Difficulty"] . "', '" . $_POST["TestCases"] . "', '" . $_POST["Topic"] . "', '" . $_POST["FunctionName"] . "')";
 
 $result = mysqli_query($conn,$sql);
 $error = mysqli_error($conn);

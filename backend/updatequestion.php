@@ -55,10 +55,10 @@ $error = mysqli_error($conn);
 
 if($error)
 {
-    echo "SQL ERROR: " . $error;
+    echo '{ "dbSuccess":true, "SQL_ERROR":' . json_encode($error, JSON_UNSECAPED_UNICODE) . '}';
 } else 
 {
-    echo $result;
+    echo '{ "dbSuccess":true }';
 }
 
 
