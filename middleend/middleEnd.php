@@ -33,7 +33,7 @@ if (isset($username) && isset($password)){
 	} else if ($query == "UpdateExamQuestion") {
 		$url = "https://web.njit.edu/~ar664/cs490/backend/updateexamquestions.php";
 	} else if ($query == "DeleteExamQuestion") {
-		$url = "https://web.njit.edu/~ar664/cs490/backend/deleteexamquestions.php";
+		$url = "https://web.njit.edu/~ar664/cs490/backend/deleteexamquestion.php";
 	} else {
 		echo "ERROR: Query not found";
 		var_dump($output);
@@ -41,10 +41,10 @@ if (isset($username) && isset($password)){
 	}
 
 
-	if (isset($_POST['Answer']) == NULL){
+	if (!isset($_POST['Answer'])){
 		$ch1 = curl_init($url);
 		curl_setopt($ch1, CURLOPT_POST, TRUE); // store result in var
-		curl_setopt($ch1, CURL_POSTFIELDS, http_build_query($_POST)); // store result in var
+		curl_setopt($ch1, CURLOPT_POSTFIELDS, http_build_query($_POST)); // store result in var
 		curl_setopt($ch1, CURLOPT_RETURNTRANSFER, TRUE); // store result in var 
 		$query_result = curl_exec($ch1);
 		echo $query_result; 
@@ -75,8 +75,8 @@ if (isset($username) && isset($password)){
 			if ($defFirstIdx === FALSE || $parensFirstIdx === FALSE) {
 				//! the answer string provided is invalid, so handle this error.
 				$pointsGiven = 0;
-				echo "answer provided isn't a valid python function, missing def declaration.";
-				echo "Points Given: " . $pointsGiven;
+				//echo "answer provided isn't a valid python function, missing def declaration.";
+				//echo "Points Given: " . $pointsGiven;
 				return;
 			}
 
@@ -98,7 +98,7 @@ if (isset($username) && isset($password)){
 			$testCases = json_decode($jsonTestCases, true);
 			
 			if ($testCases == NULL) {
-				echo "TestCases: Invalid json. Please enter valid json for TestCases param.";
+			//	echo "TestCases: Invalid json. Please enter valid json for TestCases param.";
 				return;
 			}
 
@@ -144,7 +144,7 @@ if (isset($username) && isset($password)){
 
 			   $ch2 = curl_init($url);
 			   curl_setopt($ch2, CURLOPT_POST, TRUE); // store result in var
-			   curl_setopt($ch2, CURL_POSTFIELDS, http_build_query($_POST)); // store result in var
+			   curl_setopt($ch2, CURLOPT_POSTFIELDS, http_build_query($_POST)); // store result in var
 			   curl_setopt($ch2, CURLOPT_RETURNTRANSFER, TRUE); // store result in var 
 			   $updatedQuestion = curl_exec($ch2);
 			   echo $updatedQuestion;
