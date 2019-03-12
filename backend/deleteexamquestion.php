@@ -14,9 +14,9 @@ $result = mysqli_query($conn, $sql);
 $error = mysqli_error($conn);
 if($error)
 {
-    echo "SQL ERROR: " . $error;
+    echo '{ "dbSuccess":false, "SQL_ERROR":' . json_encode($error, JSON_UNESCAPED_UNICODE) . '}';
 } else {
-    echo $result;
+    echo '{ "dbSuccess":true }';
 }
 
 ?>
