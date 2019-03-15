@@ -4,33 +4,8 @@
         <h1>Final Exam</h1>
     </head>
     <body onload="loadExam()">
-        <script src="search.js">
-            function insertTab(o, e) {		
-                var kC = e.keyCode ? e.keyCode : e.charCode ? e.charCode : e.which;
-                if (kC == 9 && !e.shiftKey && !e.ctrlKey && !e.altKey) {
-                    var oS = o.scrollTop;
-                    if (o.setSelectionRange) {
-                        var sS = o.selectionStart;	
-                        var sE = o.selectionEnd;
-                        o.value = o.value.substring(0, sS) + "\t" + o.value.substr(sE);
-                        o.setSelectionRange(sS + 1, sS + 1);
-                        o.focus();
-                    }
-                    else if (o.createTextRange) {
-                        document.selection.createRange().text = "\t";
-                        e.returnValue = false;
-                    }
-                    o.scrollTop = oS;
-                    if (e.preventDefault) {
-                        e.preventDefault();
-                    }
-                    return false;
-                }
-                return true;
-            }    
-        </script>
-        <div id="fullExam">
-        </div>
+        <script src="search.js"></script>
+        <div id="fullExam">Exam not posted. Try again later.</div>
         <h1 id="subMsg" style="visibility: hidden">Done? Ready to Submit? (Remember to Double Check your work!)</h1>
         <button onclick="submitExam()" style="visibility: hidden" id="studentSubmit">Submit Exam</button>
         <h2 id="system"></h2>
