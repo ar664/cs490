@@ -8,6 +8,20 @@
         <div id="fullExam">Exam not posted. Try again later.</div>
         <h1 id="subMsg" style="visibility: hidden">Done? Ready to Submit? (Remember to Double Check your work!)</h1>
         <button onclick="submitExam()" style="visibility: hidden" id="studentSubmit">Submit Exam</button>
+        <table name="questionArray" style="visibility: hidden" id="qTable">
+            <thead>
+                <tr class="header">
+                    <th class="question">QUESTION</th>
+                    <th>POINTS</th>
+                    <th>POINTSGIVEN</th>
+                    <th>AUTOCOMMENTS</th>
+                    <th>TEACHERCOMMENTS</th>
+                </tr>
+            </thead>
+            <tbody id="qArray">
+            </tbody>
+        </table><br>
+
         <h2 id="system"></h2>
         <p id="erroring"></p>
     </body>

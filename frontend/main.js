@@ -337,7 +337,13 @@ function loadExam() {
     xhttp.onreadystatechange = function() {
         if(this.readyState == 4 && this.status == 200) {
             var examJSON = this.responseText;
-            var examResults = JSON.parse(examJSON);
+            var examResults;
+            try {
+                examResults = JSON.parse(examJSON);
+            } catch(e) {
+                document.getElementById("erroring").innerHTML = "JSON errror: " + examJSON;
+                return;
+            }
             var examArray = examResults.Exam;
             var questionArray = examResults.Questions;
             document.getElementById("fullExam").innerHTML = "EXAM 1";
@@ -346,7 +352,51 @@ function loadExam() {
             //Testing
             var limiter = false;
 
-            if(examArray.length > 0) {
+            //Check if the exam has been graded
+            if(examArray[0].AutoComments != "") {
+                document.getElementById("qTable").style.visibility = "visible";
+                var questionTable = document.getElementById("qArray");
+                for(n = 0; n < examArray.length-1; n++)
+                {
+                    var questionID = examArray[n].questionID;
+                    var questionText = questionArray[n].Question;
+                    var questionPoints = examArray[n].Points;
+                    var questionPointsGiven = examArray[n].PointsGiven;
+                    var questionAutoComments = examArray[n].AutoComments;
+                    var questionTeacherComments = examArray[n].TeacherComments;
+
+                    var row = document.createElement("TR");
+                    row.id = questionID;
+
+                    var rQuestion = document.createElement("TD");
+                    var rQuestionContent = document.createTextNode(questionText);
+                    rQuestion.appendChild(rQuestionContent);
+                    row.appendChild(rQuestion);
+
+                    var rPoints = document.createElement("TD");
+                    var rPointsContent = document.createTextNode(questionPoints);
+                    rPoints.appendChild(rPointsContent);
+                    row.appendChild(rPoints);
+
+                    var rPointsGiven = document.createElement("TD");
+                    var rPointsGivenContent = document.createTextNode(questionPointsGiven);
+                    rPointsGiven.appendChild(rPointsGivenContent);
+                    row.appendChild(rPointsGiven);
+
+                    var rAutoComments = document.createElement("TD");
+                    var rAutoCommentsContent = document.createTextNode(questionAutoComments);
+                    rAutoComments.appendChild(rAutoCommentsContent);
+                    row.appendChild(rAutoComments);
+
+                    var rTeacherComments = document.createElement("TD");
+                    var rTeacherCommentsContent = document.createTextNode(questionTeacherComments);
+                    rTeacherComments.appendChild(rTeacherCommentsContent);
+                    row.appendChild(rTeacherComments);
+
+                    questionTable.appendChild(row);
+
+                }
+            } else if(examArray.length > 0) {
                 document.getElementById("studentSubmit").style.visibility = "visible";
                 document.getElementById("subMsg").style.visibility = "visible";
                 var page = document.getElementById("fullExam");
@@ -418,18 +468,25 @@ function submitExam() {
         xhttp.onreadystatechange = function() {
             if(this.readyState == 4 && this.status == 200) {
                 var sEchoJSON = this.responseText;
-                var sEcho = JSON.parse(sEchoJSON);
+                var sEcho;
+                try{
+                    sEcho = JSON.parse(sEchoJSON);
+                } catch(e) {
+                    document.getElementById("erroring").innerHTML = "Error: " + sEchoJSON;
+                    return;
+                }
                 if(sEcho.dbSuccess) {
-                    //document.getElementById("system").innerHTML = "Answers Submitted! Grade will be posted Later.";
+                    document.getElementById("system").innerHTML = "Answers Submitted! Grade will be posted Later.";
                     successes++;
                 }
                 else {
-                    failures++;//document.getElementById("system").innerHTML = "dbSuccess is false?"
+                    document.getElementById("system").innerHTML = "dbSuccess is false?";
+                    failures++;
                 }
             }
             else {
+                document.getElementById("erroring").innerHTML = this.readyState + " " + this.status;
                 errors++;
-                //document.getElementById("erroring").innerHTML = this.readyState + " " + this.status;
             }
         }
         xhttp.open("POST","betaFrontCurl.php", true);
