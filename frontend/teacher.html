@@ -21,12 +21,18 @@
         .right {
             right: 0rem;
             background-color:lightseagreen;
+            
         }
         .centered {
             position: absolute;
             top: 50%;
             left: 50%;
             transform: translate(-50%, -50%);
+            text-align: center;
+        }
+        .centered2 {
+            position: absolute;
+            top: 10%;
             text-align: center;
         }
         button {
@@ -65,13 +71,19 @@
         h3 {
             margin: 0.5rem;
         }
-        table, tr {
-            border: 0.1rem solid black;
-            border-collapse: collapse;
+        .header {
             font-size: 1.5rem;
         }
-        th {
-            width: 15rem;
+        .question {
+            width: 40rem;
+        }
+        table{
+            border: 0.1rem solid black;
+            border-collapse: collapse;
+        }
+        th,td {
+            width: 2rem;
+            padding: 0.1rem;
             border: 0.1rem solid black;
         }
         .tcFields {
@@ -83,42 +95,11 @@
             color: greenyellow;
         }
     </style>
+    <script src="main.js" ></script>
 </head>
 <body onload="query()">
-    <script src="search.js"></script>
     <div class="split left" name="leftPage">
         <div class="centered">
-            <script>
-            // For allowing tab in textarea
-            function insertTab(o, e) {		
-                var kC = e.keyCode ? e.keyCode : e.charCode ? e.charCode : e.which;
-                if (kC == 9 && !e.shiftKey && !e.ctrlKey && !e.altKey)
-                {
-                    var oS = o.scrollTop;
-                    if (o.setSelectionRange)
-                    {
-                        var sS = o.selectionStart;	
-                        var sE = o.selectionEnd;
-                        o.value = o.value.substring(0, sS) + "\t" + o.value.substr(sE);
-                        o.setSelectionRange(sS + 1, sS + 1);
-                        o.focus();
-                    }
-                    else if (o.createTextRange)
-                    {
-                        document.selection.createRange().text = "\t";
-                        e.returnValue = false;
-                    }
-                    o.scrollTop = oS;
-                    if (e.preventDefault)
-                    {
-                        e.preventDefault();
-                    }
-                    return false;
-                }
-                return true;
-            }
-            </script>
-
             <h2>New Question</h2><br>
             Topic: <input type="text" name="topic" id="top" style="width: 15rem;">
             Difficulty: 
@@ -152,28 +133,32 @@
     </div>
 
     <div class="split right" name="rightPage">
-        <div class="centered">
+        <div class="centered2">
             <h2>Question Search</h2>
             <h3>
-                <input type="text" name="search" id="s" style="width:15rem; font-size: 1.5rem; display:inline-block; vertical-align: middle; border: none;" >
+                <input type="text" name="search" id="s" style="width:15rem; font-size: 1.5rem; display:inline-block; vertical-align: middle; border: none;" value="">
                 <button onclick="query()" style="display:inline-block; vertical-align: middle; padding:0.375rem; font-size:1rem;">Search!</button>
-                <button id="examEdit" onclick="examOn()">Make Exam</button><br><br>
-                In: <input type="text" name="qTopic" id="t"> (Topic) <br>
-                Which is: <select name="qDifficulty" id="d" size="1">
-                    <option value ="" disabled selected>Difficulty</option>
+                <button id="examEdit" onclick="examOn()">Make Exam</button><br>
+                In: <input type="text" name="qTopic" id="t" value=""> (Topic) <br>
+                Which is: <select name="qDifficulty" id="d" size="1" value="">
+                    <option value ="">Any Difficulty</option>
                     <option value="Easy">Easy</option>
                     <option value="Medium">Medium</option>
                     <option value="Hard">Hard</option>
                 </select>
             </h3>
-            <table name="queryResults" id="qResults">
-                <tr>
-                    <th>QUESTION</th>
-                    <th>TOPIC</th>
-                    <th>DIFFICULTY</th>
-                </tr>
-            </table>
-            <button onclick="addToExam()" style="visibility: hidden" id="makeExam">Publish Exam</button>
+            <table name="queryResults">
+                <thead>
+                    <tr class="header">
+                        <th class="question">QUESTION</th>
+                        <th>TOPIC</th>
+                        <th>DIFFICULTY</th>
+                    </tr>
+                </thead>
+                <tbody id="qResults">
+                </tbody>
+            </table><br>
+            <button onclick="addToExam()" id="makeExam">Publish Exam</button>
             <p id="testWork"></p>
             <p id="status"></p>
         </div>
