@@ -11,21 +11,21 @@ if(isset($_POST["ID"]))
     $ID = 'ID IS NOT NULL';
 }
 
-if(isset($_POST["Question"]))
+if(isset($_POST["Question"]) && $_POST["Question"] != "")
 {
     $Question = 'Question REGEXP "' . $_POST["Question"] . '"';
 } else {
     $Question = 'Question REGEXP ".*"';
 }
 
-if(isset($_POST["Difficulty"]))
+if(isset($_POST["Difficulty"]) && $_POST["Difficulty"] != "")
 {
     $Difficulty = 'Difficulty="' . $_POST["Difficulty"] . '"';
 } else {
     $Difficulty = 'Difficulty REGEXP ".*"';
 }
 
-if(isset($_POST["Topic"]))
+if(isset($_POST["Topic"]) && $_POST["Topic"] != "")
 {
     $Topic = 'Topic REGEXP "' . $_POST["Topic"] . '"';
 } else {
