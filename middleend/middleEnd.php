@@ -21,25 +21,6 @@ if (isset($username) && isset($password)){
 
 if(isset($_POST["query"])) {
 	$query = $_POST["query"]; 
-	//if($query == "GetQuestions") {
-	//	$url = "https://web.njit.edu/~ar664/cs490/backend/getquestions.php";
-	//} else if ($query == "InsertQuestion") {
-//		$url = "https://web.njit.edu/~ar664/cs490/backend/insertquestion.php";
-//	} else if ($query == "DeleteQuestion") {
-//		$url = "https://web.njit.edu/~ar664/cs490/backend/deletequestion.php";
-//	} else if ($query == "GetExam") {
-//		$url = "https://web.njit.edu/~ar664/cs490/backend/getexam.php";
-//	} else if ($query == "InsertExamQuestion") {
-//		$url = "https://web.njit.edu/~ar664/cs490/backend/insertexamquestion.php";
-//	} else if ($query == "UpdateExamQuestion") {
-//		$url = "https://web.njit.edu/~ar664/cs490/backend/updateexamquestion.php";
-//	} else if ($query == "DeleteExamQuestion") {
-//		$url = "https://web.njit.edu/~ar664/cs490/backend/deleteexamquestion.php";
-//	} else {
-//		echo "ERROR: Query not found";
-//		return;
-//	}
-
        switch ($query){
          case "GetQuestions":
 	   $url = "https://web.njit.edu/~ar664/cs490/backend/getquestions.php";
