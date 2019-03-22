@@ -1,10 +1,14 @@
 <!DOCTYPE html>
 <html>
 <head>
+    <title>Instructor Page</title>
     <!-- CSS -->
     <style type="text/css">
         body {
             font-family:'Lucida Sans', 'Lucida Sans Regular', 'Lucida Grande', 'Lucida Sans Unicode', Geneva, Verdana, sans-serif;
+        }
+        strong {
+            font-size: 1.25rem;
         }
         .split {
             height: 100%;
@@ -45,6 +49,7 @@
         }
         button:hover {
             background-color:greenyellow;
+            cursor: pointer;
         }
         .tc {
             text-align: center;
@@ -57,6 +62,7 @@
         }
         .rm:hover {
             background: hotpink;
+            cursor: pointer;
         }
         select {
             font-size: 1rem;
@@ -64,12 +70,6 @@
         input {
             font-size: 1rem;
             width: 5rem;
-        }
-        h2 {
-            margin: 0rem;
-        }
-        h3 {
-            margin: 0.5rem;
         }
         .header {
             font-size: 1.5rem;
@@ -94,21 +94,73 @@
             background-color: black;
             color: greenyellow;
         }
+        /* Style the tab */
+        .tab {
+        float: left;
+        border: 1px solid #ccc;
+        background-color: #f1f1f1;
+        width: 15%;
+        }
+
+        /* Style the buttons inside the tab */
+        .tab button {
+        display: block;
+        background-color: inherit;
+        color: black;
+        padding: 0.5rem 0.5rem;
+        width: 100%;
+        border: none;
+        outline: none;
+        text-align: left;
+        cursor: pointer;
+        transition: 0.3s;
+        font-size: 17px;
+        }
+
+        /* Change background color of buttons on hover */
+        .tab button:hover {
+        background-color: #ddd;
+        }
+
+        /* Create an active/current "tab button" class */
+        .tab button.active {
+        background-color: #ccc;
+        }
+
+        /* Style the tab content */
+        .tabcontent {
+        float: left;
+        width: 70%;
+        border-left: none;
+        position:absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        text-align: center;
+        }
     </style>
     <script src="main.js" ></script>
 </head>
 <body onload="query()">
     <div class="split left" name="leftPage">
-        <div class="centered">
-            <h2>New Question</h2><br>
-            Topic: <input type="text" name="topic" id="top" style="width: 15rem;">
-            Difficulty: 
+        <div class="tab">
+            <button class="tablinks" onclick="changePage(event, 'qAdd')" id="defaultOpen">Add a Question</button>
+            <button class="tablinks" onclick="changePage(event, 'exEdit')">Edit Exam</button>
+            <button class="tablinks" onclick="changePage(event, 'gradeExam')">Grade Exam</button>
+        </div>
+
+        <div class="tabcontent" id="qAdd">
+            <h2>New Question</h2>
+            <strong>Topic: </strong><input type="text" name="topic" id="top" style="width: 15rem;">
+            <strong>Difficulty: </strong> 
             <select name="difficulty" id="diff" size="1">
                 <option value="Easy">Easy</option>
                 <option value="Medium">Medium</option>
                 <option value="Hard">Hard</option>
-            </select><br>
-            <h3>Function Name: <input type="text" id="functionName" style="width: 15rem;"><br>Question:</h3><textarea name="question" id="q" rows="20" cols="100" onkeydown="insertTab(this,event);"></textarea><br><br>
+            </select><br><br>
+            <strong>Function Name: <input type="text" id="functionName" style="width: 15rem;"></strong>
+            <h3>Question:</h3>
+            <textarea name="question" id="q" rows="20" cols="100" onkeydown="insertTab(this,event);"></textarea><br><br>
             <div style="text-align:left; font-size: 1.5rem;"><b>Test Cases</b></div>
             
             <!-- TEST CASES -->
@@ -129,6 +181,21 @@
             <button id="add" onclick="addQuestion()">Add Question</button><br><br>
 
             <p id="sysMsg" style="padding-top: 4rem;"></p> <!-- FOR ERROR MESSAGES-->
+        </div>
+
+        <div class="tabcontent" id="exEdit" onload="teachExamView('editing')">
+            <h3>Exam Questions</h3>
+            <table name="examQuestions">
+                <tr class="header">
+                    <th>Question ID</th>
+                    <th class="question">QUESTION</th>
+                    <th>Points</th>
+                </tr>
+            </table>
+        </div>
+
+        <div class="tabcontent" id="gradeExam" onload="teachExamView('grading')">
+
         </div>
     </div>
 
