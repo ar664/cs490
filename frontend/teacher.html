@@ -1,10 +1,14 @@
 <!DOCTYPE html>
 <html>
 <head>
+    <title>Instructor Page</title>
     <!-- CSS -->
     <style type="text/css">
         body {
             font-family:'Lucida Sans', 'Lucida Sans Regular', 'Lucida Grande', 'Lucida Sans Unicode', Geneva, Verdana, sans-serif;
+        }
+        strong {
+            font-size: 1.25rem;
         }
         .split {
             height: 100%;
@@ -21,12 +25,18 @@
         .right {
             right: 0rem;
             background-color:lightseagreen;
+            
         }
         .centered {
             position: absolute;
             top: 50%;
             left: 50%;
             transform: translate(-50%, -50%);
+            text-align: center;
+        }
+        .centered2 {
+            position: absolute;
+            top: 10%;
             text-align: center;
         }
         button {
@@ -39,6 +49,7 @@
         }
         button:hover {
             background-color:greenyellow;
+            cursor: pointer;
         }
         .tc {
             text-align: center;
@@ -51,6 +62,7 @@
         }
         .rm:hover {
             background: hotpink;
+            cursor: pointer;
         }
         select {
             font-size: 1rem;
@@ -59,19 +71,19 @@
             font-size: 1rem;
             width: 5rem;
         }
-        h2 {
-            margin: 0rem;
-        }
-        h3 {
-            margin: 0.5rem;
-        }
-        table, tr {
-            border: 0.1rem solid black;
-            border-collapse: collapse;
+        .header {
             font-size: 1.5rem;
         }
-        th {
-            width: 15rem;
+        .question {
+            width: 40rem;
+        }
+        table{
+            border: 0.1rem solid black;
+            border-collapse: collapse;
+        }
+        th,td {
+            width: 2rem;
+            padding: 0.1rem;
             border: 0.1rem solid black;
         }
         .tcFields {
@@ -82,52 +94,78 @@
             background-color: black;
             color: greenyellow;
         }
+        /* Style the tab */
+        .tab {
+        float: left;
+        border: 1px solid #ccc;
+        background-color: #f1f1f1;
+        width: 15%;
+        }
+
+        /* Style the buttons inside the tab */
+        .tab button {
+        display: block;
+        background-color: inherit;
+        color: black;
+        padding: 0.5rem 0.5rem;
+        width: 100%;
+        border: none;
+        outline: none;
+        text-align: left;
+        cursor: pointer;
+        transition: 0.3s;
+        font-size: 17px;
+        }
+
+        /* Change background color of buttons on hover */
+        .tab button:hover {
+        background-color: #ddd;
+        }
+
+        /* Create an active/current "tab button" class */
+        .tab button.active {
+        background-color: #ccc;
+        }
+
+        /* Style the tab content */
+        .tabcontent {
+        float: left;
+        width: 70%;
+        border-left: none;
+        position:absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        text-align: center;
+        }
     </style>
+    <script src="main.js" ></script>
 </head>
 <body onload="query()">
-    <script src="search.js"></script>
     <div class="split left" name="leftPage">
-        <div class="centered">
-            <script>
-            // For allowing tab in textarea
-            function insertTab(o, e) {		
-                var kC = e.keyCode ? e.keyCode : e.charCode ? e.charCode : e.which;
-                if (kC == 9 && !e.shiftKey && !e.ctrlKey && !e.altKey)
-                {
-                    var oS = o.scrollTop;
-                    if (o.setSelectionRange)
-                    {
-                        var sS = o.selectionStart;	
-                        var sE = o.selectionEnd;
-                        o.value = o.value.substring(0, sS) + "\t" + o.value.substr(sE);
-                        o.setSelectionRange(sS + 1, sS + 1);
-                        o.focus();
-                    }
-                    else if (o.createTextRange)
-                    {
-                        document.selection.createRange().text = "\t";
-                        e.returnValue = false;
-                    }
-                    o.scrollTop = oS;
-                    if (e.preventDefault)
-                    {
-                        e.preventDefault();
-                    }
-                    return false;
-                }
-                return true;
-            }
-            </script>
+        <div class="tab">
+            <button class="tablinks" onclick="changePage(event, 'qAdd')" id="defaultOpen">Add a Question</button>
+            <button class="tablinks" onclick="changePage(event, 'exEdit')">Edit Exam</button>
+            <button class="tablinks" onclick="changePage(event, 'gradeExam')">Grade Exam</button>
+        </div>
 
-            <h2>New Question</h2><br>
-            Topic: <input type="text" name="topic" id="top" style="width: 15rem;">
-            Difficulty: 
+        <div class="tabcontent" id="qAdd">
+            <h2>New Question</h2>
+            <strong>Topic: </strong><input type="text" name="topic" id="top" style="width: 15rem;">
+            <strong>Difficulty: </strong> 
             <select name="difficulty" id="diff" size="1">
                 <option value="Easy">Easy</option>
                 <option value="Medium">Medium</option>
                 <option value="Hard">Hard</option>
+<<<<<<< HEAD
             </select><br>
             <h3>Function Name: <input type="text" id="functionName" style="width: 15rem;"><br>Question:</h3><textarea name="question" id="q" rows="20" cols="100" onkeydown="insertTab(this, event);"></textarea><br><br>
+=======
+            </select><br><br>
+            <strong>Function Name: <input type="text" id="functionName" style="width: 15rem;"></strong>
+            <h3>Question:</h3>
+            <textarea name="question" id="q" rows="20" cols="100" onkeydown="insertTab(this,event);"></textarea><br><br>
+>>>>>>> a15b9e8295303d03d281a317708a013a2be97988
             <div style="text-align:left; font-size: 1.5rem;"><b>Test Cases</b></div>
             
             <!-- TEST CASES -->
@@ -149,31 +187,50 @@
 
             <p id="sysMsg" style="padding-top: 4rem;"></p> <!-- FOR ERROR MESSAGES-->
         </div>
+
+        <div class="tabcontent" id="exEdit" onload="teachExamView('editing')">
+            <h3>Exam Questions</h3>
+            <table name="examQuestions">
+                <tr class="header">
+                    <th>Question ID</th>
+                    <th class="question">QUESTION</th>
+                    <th>Points</th>
+                </tr>
+            </table>
+        </div>
+
+        <div class="tabcontent" id="gradeExam" onload="teachExamView('grading')">
+
+        </div>
     </div>
 
     <div class="split right" name="rightPage">
-        <div class="centered">
+        <div class="centered2">
             <h2>Question Search</h2>
             <h3>
-                <input type="text" name="search" id="s" style="width:15rem; font-size: 1.5rem; display:inline-block; vertical-align: middle; border: none;" >
+                <input type="text" name="search" id="s" style="width:15rem; font-size: 1.5rem; display:inline-block; vertical-align: middle; border: none;" value="">
                 <button onclick="query()" style="display:inline-block; vertical-align: middle; padding:0.375rem; font-size:1rem;">Search!</button>
-                <button id="examEdit" onclick="examOn()">Make Exam</button><br><br>
-                In: <input type="text" name="qTopic" id="t"> (Topic) <br>
-                Which is: <select name="qDifficulty" id="d" size="1">
-                    <option value ="" disabled selected>Difficulty</option>
+                <button id="examEdit" onclick="examOn()">Make Exam</button><br>
+                In: <input type="text" name="qTopic" id="t" value=""> (Topic) <br>
+                Which is: <select name="qDifficulty" id="d" size="1" value="">
+                    <option value ="">Any Difficulty</option>
                     <option value="Easy">Easy</option>
                     <option value="Medium">Medium</option>
                     <option value="Hard">Hard</option>
                 </select>
             </h3>
-            <table name="queryResults" id="qResults">
-                <tr>
-                    <th>QUESTION</th>
-                    <th>TOPIC</th>
-                    <th>DIFFICULTY</th>
-                </tr>
-            </table>
-            <button onclick="addToExam()" style="visibility: hidden" id="makeExam">Publish Exam</button>
+            <table name="queryResults">
+                <thead>
+                    <tr class="header">
+                        <th class="question">QUESTION</th>
+                        <th>TOPIC</th>
+                        <th>DIFFICULTY</th>
+                    </tr>
+                </thead>
+                <tbody id="qResults">
+                </tbody>
+            </table><br>
+            <button onclick="addToExam()" id="makeExam">Publish Exam</button>
             <p id="testWork"></p>
             <p id="status"></p>
         </div>

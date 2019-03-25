@@ -2,7 +2,7 @@
     if(isset($_POST["query"])) {
         $req = curl_init();
 
-        curl_setopt($req, CURLOPT_URL,"https://web.njit.edu/~amp85/cs490/middleend/middleEnd.php");
+        curl_setopt($req, CURLOPT_URL,"https://web.njit.edu/~ar664/cs490/middleend/middleEnd.php");
         curl_setopt($req, CURLOPT_POST, 1);
         curl_setopt($req, CURLOPT_POSTFIELDS, http_build_query($_POST));
 
@@ -23,7 +23,7 @@
         $us = $_POST["username"];
         $pw = $_POST["password"];
         
-        curl_setopt($req, CURLOPT_URL,"https://web.njit.edu/~amp85/cs490/middleend/middleEnd.php");
+        curl_setopt($req, CURLOPT_URL,"https://web.njit.edu/~ar664/cs490/middleend/middleEnd.php");
         curl_setopt($req, CURLOPT_POST, 1);
         curl_setopt($req, CURLOPT_POSTFIELDS,"Username=" . $us . "&Password=" . $pw);
 
