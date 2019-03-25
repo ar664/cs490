@@ -51,7 +51,7 @@ if(isset($_POST["query"])) {
 	//echo "Answer is: \n" . var_dump($_POST['Answer']) . PHP_EOL;
 	//HTML form submits will sometimes submit blank strings so empty is necessary
 	if (isset($_POST['Answer']) == FALSE || empty($_POST['Answer'])){
-	        echo "I don't have an answer\n";
+	      //  echo "I don't have an answer\n";
 		$ch1 = curl_init($url);
 		curl_setopt($ch1, CURLOPT_POST, TRUE); // store result in var
 		curl_setopt($ch1, CURLOPT_POSTFIELDS, http_build_query($_POST)); // store result in var
@@ -90,7 +90,7 @@ if(isset($_POST["query"])) {
 			$json_QuestionLst= curl_exec($ch3);
 			$questionLst= json_decode($json_QuestionLst);
 			$arrayQuestions=$questionLst->Questions;
-		      //echo "Here are all the questions: " . var_dump($arrayQuestions)  . PHP_EOL;	
+		        //echo "Here are all the questions: " . var_dump($arrayQuestions)  . PHP_EOL;	
 			curl_close($ch3);
 		       
 			//Get functionName and TestCases from GetQuestions
@@ -124,7 +124,7 @@ if(isset($_POST["query"])) {
                                 //echo "Question with ID: " . $_POST["QuestionID"] . 
                                  //" is worth $exam_Value->Points Points" . PHP_EOL; 
 				 $pointsGiven=$exam_Value->Points;
-				 echo "Points is now set to: " . $pointsGiven . PHP_EOL;
+				// echo "Points is now set to: " . $pointsGiven . PHP_EOL;
 			  }
 		       }
 
@@ -138,8 +138,8 @@ if(isset($_POST["query"])) {
 			if ($defFirstIdx === FALSE || $parensFirstIdx === FALSE) {
 				//! the answer string provided is invalid, so handle this error.
 				$pointsGiven = 0;
-				echo "answer provided isn't a valid python function, missing def declaration.";
-				echo "Points Given: " . $pointsGiven;
+				//echo "answer provided isn't a valid python function, missing def declaration.";
+				//echo "Points Given: " . $pointsGiven;
 				return;
 			}
 
@@ -149,8 +149,8 @@ if(isset($_POST["query"])) {
 			// replace the functionName in answer string
 		
 			if ($answerFuncName != $functName) {
-				echo "Function name is incorrect So I'm taking away 10 points" . PHP_EOL;
-				echo "answerFuncName:$answerFuncName   functName:$functName" . PHP_EOL;
+				//echo "Function name is incorrect So I'm taking away 10 points" . PHP_EOL;
+				//echo "answerFuncName:$answerFuncName   functName:$functName" . PHP_EOL;
 				$pointsGiven -= 10;
 			}
 			$answer = substr_replace($answer, "answer", $answerFuncNameStartIdx, $answerFuncNameLen);
@@ -159,11 +159,11 @@ if(isset($_POST["query"])) {
 			$filepath=$scriptPath . '/' . "student_answer.py"; 
 		        file_put_contents($filepath, $answer);
 
-                       // echo "This is Json: " . var_dump($jsonTestCases) . PHP_EOL;	
-//			echo "Testcases below:" . var_dump($testCases) . PHP_EOL; 
+                        //echo "This is Json: " . var_dump($jsonTestCases) . PHP_EOL;	
+                       //echo "Testcases below:" . var_dump($testCases) . PHP_EOL; 
 			if ($jsonTestCases == NULL) {
-	//			echo "Testcases within if statement:" . var_dump($testCases["Input"]) . PHP_EOL; 
-				echo "TestCases: Invalid json. Please enter valid json for TestCases param.";
+	                        //echo "Testcases within if statement:" . var_dump($testCases["Input"]) . PHP_EOL; 
+				//echo "TestCases: Invalid json. Please enter valid json for TestCases param.";
 				return;
 			}
 
@@ -179,8 +179,8 @@ if(isset($_POST["query"])) {
 				$data="\n\n#For Testing Purposes\n";
 				$temp="";
                              
-			     // write the input Elements in student function 
-			     // so that it runs
+			       //write the input Elements in student function 
+			       //so that it runs
 			      for($j=0; $j < $inputSize; $j++){
 				 if(is_numeric($expInput[$j])){
 				   $strtoInt=intval($expInput[$j]);
@@ -194,14 +194,14 @@ if(isset($_POST["query"])) {
                                   $temp.="arg$j, ";
 				  }
 				  if ($j == $inputSize - 1){
-				     echo "Temp is: $temp\n";
+			             //echo "Temp is: $temp\n";
 				     if (strpos($answer, 'print') === FALSE){
 				     // echo "Function doesn't have a Print Statement\n";
 				      $data.="print(answer($temp))";
 				      $endingParenth = strpos($data, ", )");
 				      $doubleRightParenth = strpos($data, "))");
 				     } else{
-				    //  echo "Function has a Print Statement\n";
+				     // echo "Function has a Print Statement\n";
 				      $data.="$functName($temp)";
 				      $endingParenth = strpos($data, ", )");
 				      $doubleRightParenth = strpos($data, ")");
@@ -212,10 +212,10 @@ if(isset($_POST["query"])) {
 				     $data = substr_replace($data, '', $endingParenth, $diffPos);
 				  }
                                }
-                                echo "Data after replace contains: $data" . PHP_EOL;
-			//	echo "TestCase is: " . var_dump($expInput) . PHP_EOL;
-			//	echo "expInput is: " . var_dump($expInput) . PHP_EOL;
-	     	       //       echo "expOutput is: " . var_dump($expOutput) . PHP_EOL;
+                               //echo "Data after replace contains: $data" . PHP_EOL;
+			       //echo "TestCase is: " . var_dump($expInput) . PHP_EOL;
+			       //echo "expInput is: " . var_dump($expInput) . PHP_EOL;
+	     	               //echo "expOutput is: " . var_dump($expOutput) . PHP_EOL;
 			
 			     
 				// expInput must always be an array with two arguments inside to work
@@ -233,18 +233,18 @@ if(isset($_POST["query"])) {
 				if ($status == 1) {    
 					//! Handle case where provide answer doesn't successfully run
 				      $pointsGiven = 0;
-				      echo "Program couldn't compile Points Given: " . $pointsGiven . PHP_EOL;
+				      //echo "Program couldn't compile Points Given: " . $pointsGiven . PHP_EOL;
 				      $_POST['AutoComments']= implode("\n", $output);
-				      echo "AutoComments: " . $_POST['AutoComments']. PHP_EOL;
+				      //echo "AutoComments: " . $_POST['AutoComments']. PHP_EOL;
 				      return;
 				}
 
 				if ($actualOutput != $expOutput) {
 					//! Handle case where the test case fails 
-					echo "actualOutput:$actualOutput expOutput:$expOutput".PHP_EOL;
+					//echo "actualOutput:$actualOutput expOutput:$expOutput".PHP_EOL;
 					$pointsGiven -= 7;
 				        $_POST['AutoComments']= implode("\n", $output);
-				        echo "testCases failed" . "Current Points: " . $pointsGiven . PHP_EOL;
+				        //echo "testCases failed" . "Current Points: " . $pointsGiven . PHP_EOL;
 				}
 
 		            //Restoring file to orginal form
@@ -262,7 +262,7 @@ if(isset($_POST["query"])) {
 			
 			// We are done running the test cases so now lets send the points given.
        			   $_POST['PointsGiven']=$pointsGiven;
-                           echo "student received " . $pointsGiven . " points" . PHP_EOL;
+                           //echo "student received " . $pointsGiven . " points" . PHP_EOL;
 
 			   $ch2 = curl_init($url);
 			   curl_setopt($ch2, CURLOPT_POST, TRUE); // store result in var
