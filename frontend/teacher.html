@@ -139,7 +139,7 @@
         text-align: center;
         }
     </style>
-    <script src="main.js" ></script>
+    <script src="main.js" >document.getElementById("defaultOpen").click();</script>
 </head>
 <body onload="query()">
     <div class="split left" name="leftPage">
@@ -183,19 +183,27 @@
             <p id="sysMsg" style="padding-top: 4rem;"></p> <!-- FOR ERROR MESSAGES-->
         </div>
 
-        <div class="tabcontent" id="exEdit" onload="teachExamView('editing')">
+        <div class="tabcontent" id="exEdit">
             <h3>Exam Questions</h3>
-            <table name="examQuestions">
-                <tr class="header">
-                    <th>Question ID</th>
-                    <th class="question">QUESTION</th>
-                    <th>Points</th>
-                </tr>
+            <table name="examView">
+                <thead>
+                    <tr class="header">
+                        <th>Question ID</th>
+                        <th class="question">QUESTION</th>
+                        <th>Points</th>
+                    </tr>
+                </thead>
+                <tbody id="examQuestions"></tbody>
             </table>
+            <button onclick="editExam()">Update Exam</button>
+            <button onclick="teachExamView('editing')">Reload</button>
+            <p id="sysMsg1" style="padding-top: 4rem;"></p>
+            <p id="stat"></p>
         </div>
 
-        <div class="tabcontent" id="gradeExam" onload="teachExamView('grading')">
-
+        <div class="tabcontent" id="gradeExam">
+            <button onclick="">Finalize Points</button>
+            <p id="sysMsg2" style="padding-top: 4rem;"></p>
         </div>
     </div>
 
