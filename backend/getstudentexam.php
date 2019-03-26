@@ -2,9 +2,21 @@
 
 global $conn;
 
+if(!isset($_POST["StudentID"]))
+{
+    die('{"POST":"StudentID not set"}');
+}
+
+if(!isset($_POST["ExamID"]))
+{
+    die('{"POST":"ExamID not set"}');
+}
+
 include 'connect2.php';
 
-$sql = "SELECT * from Exam";
+
+
+$sql = "SELECT * from Students WHERE StudentID LIKE '" . $_POST["StudentID"] . "' AND ExamID=" . $_POST["ExamID"];
 $result = mysqli_query($conn, $sql);
 
 if (mysqli_num_rows($result) > 0)
@@ -13,7 +25,7 @@ if (mysqli_num_rows($result) > 0)
     $sql2 = "SELECT * from Questions WHERE ";
     $exam = ' "Exam": [';
     while($row = mysqli_fetch_assoc($result)) {
-        $exam = $exam .'{"QuestionID": ' . $row["QuestionID"] . ' , "Points":' . $row["Points"] . ' , "PointsGiven":' . $row["PointsGiven"]  . ' , "AutoComments":' . json_encode($row["AutoComments"], JSON_UNESCAPED_UNICODE) . ' , "TeacherComments":' . json_encode($row["TeacherComments"], JSON_UNESCAPED_UNICODE) . '},';
+        $exam = $exam .'{"Answer":'. json_encode($row["Answer"]) . ', "QuestionID": ' . $row["QuestionID"] . ' , "PointsGiven":' . $row["PointsGiven"]  . ' , "AutoComments":' . json_encode($row["AutoComments"], JSON_UNESCAPED_UNICODE) . ' , "TeacherComments":' . json_encode($row["TeacherComments"], JSON_UNESCAPED_UNICODE) . '},';
         $sql2 = $sql2 . "ID=" . $row["QuestionID"] . " OR ";
     }
     $exam = $exam . '{"Test":false}]';

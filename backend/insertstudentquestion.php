@@ -9,9 +9,9 @@ if(!isset($_POST["QuestionID"]))
     die('{"POST":"Question ID not set"}');
 }
 
-if(!isset($_POST["Points"])) 
+if(!isset($_POST["StudentID"])) 
 {
-    die('{"POST":"Points not set"}');
+    die('{"POST":"StudentID not set"}');
 }
 
 if(!isset($_POST["ExamID"])) 
@@ -19,7 +19,7 @@ if(!isset($_POST["ExamID"]))
     die('{"POST":"ExamID not set"}');
 }
 
-$sql = "INSERT INTO Exam (ExamID, QuestionID, Points) VALUES (" . $_POST["ExamID"] . "," . $_POST["QuestionID"] .  "," . $_POST["Points"] . ")";
+$sql = 'INSERT INTO Students (StudentID, ExamID, QuestionID) VALUES ("' . $_POST["StudentID"] . '",' . $_POST["ExamID"] . "," . $_POST["QuestionID"] . ")";
 $result = mysqli_query($conn, $sql);
 $error = mysqli_error($conn);
 if($error)
