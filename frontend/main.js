@@ -392,7 +392,7 @@ function examOff() {
     }*/
 }
 
-// Adding Questions to the Exam and Posting It (test)
+// Adding Questions to the Exam and Posting It
 function addToExam() {
     var table = document.getElementById("qResults");
     var examQuestions = table.children;
@@ -425,7 +425,7 @@ function addToExam() {
     }
 }
 
-// Removes a question from Exam (testing!)
+// Removes a question from Exam
 function rmFromExam(recvID) {
     var xhttp = new XMLHttpRequest();
     var delExamQReq = "query=DeleteExamQuestion&QuestionID=" + recvID;
