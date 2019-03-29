@@ -1,5 +1,4 @@
 <?php
-
 $username = $_POST['Username'];
 $password = $_POST['Password'];
 
@@ -48,6 +47,8 @@ if(isset($_POST["query"])) {
 	   return;
        } 
         
+	//echo "Post Variable Data: \n";
+	//var_dump($_POST);
 	//echo "Answer is: \n" . var_dump($_POST['Answer']) . PHP_EOL;
 	//HTML form submits will sometimes submit blank strings so empty is necessary
 	if (isset($_POST['Answer']) == FALSE || empty($_POST['Answer'])){
@@ -65,8 +66,8 @@ if(isset($_POST["query"])) {
 		if (isset($_POST['Answer']) && $query='UpdateExamQuestion'){ 
 			if (!isset($_POST['QuestionID']) || empty($_POST['QuestionID'])) {
 				//! Missing required post params
-				echo "QuestionID:" . $_POST['QuestionID'] . PHP_EOL;
-				echo 'You didn’t give me a Post Var: QuestionID';
+				//echo "QuestionID:" . $_POST['QuestionID'] . PHP_EOL;
+				//echo 'You didn’t give me a Post Var: QuestionID';
 				return;
 			}
 			
@@ -124,6 +125,7 @@ if(isset($_POST["query"])) {
                                 //echo "Question with ID: " . $_POST["QuestionID"] . 
                                  //" is worth $exam_Value->Points Points" . PHP_EOL; 
 				 $pointsGiven=$exam_Value->Points;
+				 $totalPoints= $exam_Value->Points;
 				// echo "Points is now set to: " . $pointsGiven . PHP_EOL;
 			  }
 		       }
@@ -250,20 +252,25 @@ if(isset($_POST["query"])) {
 		            //Restoring file to orginal form
 		            file_put_contents($filepath, $answer);
 
-	        }
-			
+	        }			
+			//echo "The current amount of points outside the Grading Loop is: $pointsGiven points" . PHP_EOL;
+			//echo "Points is a \n";
+			//var_dump($_POST['Points']);
+		
 			//Grading is done output result
 			if ($pointsGiven < 0) {
 				$pointsGiven = 0;
 			}
-                        if ($pointsGiven == $_POST['Points']){
-			$_POST['AutoComments']='Good Job';
+                        if ($pointsGiven == $totalPoints){
+			  //echo "Good Job you got a perfect score" . PHP_EOL;
+			  $_POST['AutoComments']='Good Job';
 			}
 			
 			// We are done running the test cases so now lets send the points given.
        			   $_POST['PointsGiven']=$pointsGiven;
                            //echo "student received " . $pointsGiven . " points" . PHP_EOL;
-
+                           //echo "The AutoComments are: \n";
+			   //var_dump($_POST['AutoComments']);
 			   $ch2 = curl_init($url);
 			   curl_setopt($ch2, CURLOPT_POST, TRUE); // store result in var
 			   curl_setopt($ch2, CURLOPT_POSTFIELDS, http_build_query($_POST)); // store result in var
