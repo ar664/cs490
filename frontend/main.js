@@ -4,7 +4,7 @@ var numCases = 2;
 
 // For searching through the question bank
 function query() {
-    document.getElementById("version").innerHTML = "V 1.2.265";
+    //document.getElementById("version").innerHTML = "V 1.2.265";
 
     var xhttp = new XMLHttpRequest();
     var qRequest = "query=GetQuestions";
@@ -147,7 +147,7 @@ function teachExamView(mode) {
                 }
             }
             else if(mode == "grading") {
-                if(examJS.AutoComments !== "") {
+                if(exArray[0].AutoComments !== "") {
                     var examView = document.getElementById("examStatus");
                     examView.innerHTML = "";
                     while(examView.children.length > 0) {
@@ -163,11 +163,11 @@ function teachExamView(mode) {
                         var curAns = document.createElement("P");
                         curAns.style.border = "0.1rem solid black";
                         var curAnsText;
-                        if(exArray[eqNum]) {
-                            curAnsText = document.createTextNode("No answer given.");
+                        if(exArray[eqNum].Answer) {
+                            curAnsText = document.createTextNode(exArray[eqNum].Answer);
                         }
                         else {
-                            curAnsText = document.createTextNode(exArray[eqNum].Answer);
+                            curAnsText = document.createTextNode("No answer given.");
                         }
                         curAns.appendChild(curAnsText);
                         examView.appendChild(curAns);
@@ -457,7 +457,7 @@ function rmFromExam(recvID) {
     xhttp.send(delExamQReq);
 }
 
-// Loading the exam for students (Testing)
+// Loading the exam for students
 function loadExam() {
     var xhttp = new XMLHttpRequest();
 
@@ -493,7 +493,7 @@ function loadExam() {
                     row.id = questionID;
 
                     var rQuestion = document.createElement("TD");
-                    var rQuestionContent = document.createTextNode(questionText);
+                    var rQuestionContent = document.createTextNode((n+1) + ") " + questionText);
                     rQuestion.appendChild(rQuestionContent);
                     row.appendChild(rQuestion);
 
@@ -531,7 +531,7 @@ function loadExam() {
                 var page = document.getElementById("fullExam");
                 for(n = 0; n < examArray.length-1; n++) {
                     var curNode = document.createElement("P");
-                    var curText = document.createTextNode(questionArray[n].Question + "(" + examArray[n].Points + " points)");
+                    var curText = document.createTextNode((n+1) + ") " + questionArray[n].Question + " (" + examArray[n].Points + " points)");
                     curNode.appendChild(curText);
                     page.appendChild(curNode);
         
@@ -553,21 +553,15 @@ function loadExam() {
     xhttp.send("query=GetExam");
 }
 
-// For submitting the exam (testing)
+// For submitting the exam
 function submitExam() {
     var ansList = document.getElementsByTagName("textarea");
-
-    // Testing variables (delete later)
-    var successes = 0;
-    var failures = 0;
-    var errors = 0;
-    var reqString = "";
 
     for(se = 0; se < ansList.length; se++) {
         var xhttp = new XMLHttpRequest();
         var submitRequest = "query=UpdateExamQuestion&QuestionID=" + ansList[se].id + "&Answer=" + ansList[se].value;
+        console.log(ansList[se].id + " " + ansList[se].value);
         var subReq = encodeURI(submitRequest);
-        reqString+= se + " " + submitRequest + "|";
         xhttp.onreadystatechange = function() {
             if(this.readyState == 4 && this.status == 200) {
                 var sEchoJSON = this.responseText;
@@ -580,24 +574,13 @@ function submitExam() {
                 }
                 if(sEcho.dbSuccess) {
                     document.getElementById("system").innerHTML = "Answers Submitted! Grade will be posted Later.";
-                    successes++;
                 }
-                else {
-                    document.getElementById("system").innerHTML = "dbSuccess is false?";
-                    failures++;
-                }
-            }
-            else {
-                document.getElementById("erroring").innerHTML = this.readyState + " " + this.status;
-                errors++;
             }
         }
         xhttp.open("POST","betaFrontCurl.php", true);
         xhttp.setRequestHeader("Content-Type","application/x-www-form-urlencoded");
         xhttp.send(subReq);
     }
-    document.getElementById("system").innerHTML = successes + " yes & " + failures + " no & " + errors + " errors";
-    document.getElementById("erroring").innerHTML = reqString;
 }
 
 function editExam() {

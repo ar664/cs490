@@ -205,7 +205,7 @@
         </div>
 
         <div class="tabcontent" id="gradeExam" style="display:none">
-            <div id="examStatus">Exam not completed yet.</div>
+            <div id="examStatus">Exam not completed by student yet.</div>
             <button onclick="teachExamView('grading')">Finalize Points</button>
             <button onclick="resetExam()">Reset Exam</button>
             <p id="sysMsg2" style="padding-top: 4rem;"></p>
@@ -216,10 +216,10 @@
         <div class="centered2">
             <h2>Question Search</h2>
             <h3>
-                <input type="text" name="search" id="s" style="width:15rem; font-size: 1.5rem; display:inline-block; vertical-align: middle; border: none;" value="">
+                <input type="text" name="search" id="s" style="width:15rem; font-size: 1.5rem; display:inline-block; vertical-align: middle; border: none;" value="" placeholder="Keyword">
                 <button onclick="query()" style="display:inline-block; vertical-align: middle; padding:0.375rem; font-size:1rem;">Search!</button>
                 <button id="examEdit" onclick="examOn()">Make Exam</button><br>
-                In: <input type="text" name="qTopic" id="t" value=""> (Topic) <br>
+                In: <input type="text" name="qTopic" id="t" value="" placeholder="Topic"><br>
                 Which is: <select name="qDifficulty" id="d" size="1" value="">
                     <option value ="">Any Difficulty</option>
                     <option value="Easy">Easy</option>
