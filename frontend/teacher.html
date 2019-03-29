@@ -10,6 +10,9 @@
         strong {
             font-size: 1.25rem;
         }
+        textarea { 
+            resize:none;
+        }
         .split {
             height: 100%;
             width: 50%;
@@ -139,28 +142,28 @@
         text-align: center;
         }
     </style>
-    <script src="main.js" >document.getElementById("defaultOpen").click();</script>
+    <script src="main.js" ></script>
 </head>
 <body onload="query()">
     <div class="split left" name="leftPage">
         <div class="tab">
-            <button class="tablinks" onclick="changePage(event, 'qAdd')" id="defaultOpen">Add a Question</button>
+            <button class="tablinks" onclick="changePage(event, 'qAdd')">Add a Question</button>
             <button class="tablinks" onclick="changePage(event, 'exEdit')">Edit Exam</button>
             <button class="tablinks" onclick="changePage(event, 'gradeExam')">Grade Exam</button>
         </div>
 
         <div class="tabcontent" id="qAdd">
             <h2>New Question</h2>
-            <strong>Topic: </strong><input type="text" name="topic" id="top" style="width: 15rem;">
+            <strong>Topic: </strong><input type="text" name="topic" id="top" style="width: 15rem;" placeholder="i.e. Functions, Loops, Strings, etc.">
             <strong>Difficulty: </strong> 
             <select name="difficulty" id="diff" size="1">
                 <option value="Easy">Easy</option>
                 <option value="Medium">Medium</option>
                 <option value="Hard">Hard</option>
             </select><br><br>
-            <strong>Function Name: <input type="text" id="functionName" style="width: 15rem;"></strong>
+            <strong>Function Name: <input type="text" id="functionName" style="width: 15rem;" placeholder="i.e. add, vowelCount, etc"></strong>
             <h3>Question:</h3>
-            <textarea name="question" id="q" rows="20" cols="100" onkeydown="insertTab(this,event);"></textarea><br><br>
+            <textarea name="question" id="q" rows="20" cols="100" onkeydown="insertTab(this,event);" placeholder="Write a function named (function name) that does blah, blah, blah"></textarea><br><br>
             <div style="text-align:left; font-size: 1.5rem;"><b>Test Cases</b></div>
             
             <!-- TEST CASES -->
@@ -183,7 +186,7 @@
             <p id="sysMsg" style="padding-top: 4rem;"></p> <!-- FOR ERROR MESSAGES-->
         </div>
 
-        <div class="tabcontent" id="exEdit">
+        <div class="tabcontent" id="exEdit" style="display: none">
             <h3>Exam Questions</h3>
             <table name="examView">
                 <thead>
@@ -201,8 +204,10 @@
             <p id="stat"></p>
         </div>
 
-        <div class="tabcontent" id="gradeExam">
-            <button onclick="">Finalize Points</button>
+        <div class="tabcontent" id="gradeExam" style="display:none">
+            <div id="examStatus">Exam not completed by student yet.</div>
+            <button onclick="teachExamView('grading')">Finalize Points</button>
+            <button onclick="resetExam()">Reset Exam</button>
             <p id="sysMsg2" style="padding-top: 4rem;"></p>
         </div>
     </div>
@@ -211,10 +216,10 @@
         <div class="centered2">
             <h2>Question Search</h2>
             <h3>
-                <input type="text" name="search" id="s" style="width:15rem; font-size: 1.5rem; display:inline-block; vertical-align: middle; border: none;" value="">
+                <input type="text" name="search" id="s" style="width:15rem; font-size: 1.5rem; display:inline-block; vertical-align: middle; border: none;" value="" placeholder="Keyword">
                 <button onclick="query()" style="display:inline-block; vertical-align: middle; padding:0.375rem; font-size:1rem;">Search!</button>
                 <button id="examEdit" onclick="examOn()">Make Exam</button><br>
-                In: <input type="text" name="qTopic" id="t" value=""> (Topic) <br>
+                In: <input type="text" name="qTopic" id="t" value="" placeholder="Topic"><br>
                 Which is: <select name="qDifficulty" id="d" size="1" value="">
                     <option value ="">Any Difficulty</option>
                     <option value="Easy">Easy</option>
