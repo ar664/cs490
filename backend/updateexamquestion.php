@@ -27,7 +27,7 @@ if( isset($_POST["Points"]) )
 
 if( isset($_POST["Answer"]) )
 {
-    $sql = $sql . " Answer='" . $_POST["Answer"] . "'";
+    $sql = $sql . " Answer='" . str_replace("'","''",$_POST["Answer"]) . "'";
     if( isset($_POST["PointsGiven"]) || isset($_POST["AutoComments"]) || isset($_POST["TeacherComments"]) )
     {
         $sql = $sql . ",";
@@ -45,7 +45,7 @@ if( isset($_POST["PointsGiven"]) )
 
 if( isset($_POST["AutoComments"]) )
 {
-    $sql = $sql . " AutoComments='" . $_POST["AutoComments"] . "'";
+    $sql = $sql . " AutoComments='" . str_replace("'","''",$_POST["AutoComments"]) . "'";
     if(isset($_POST["TeacherComments"]))
     {
         $sql = $sql . ",";
@@ -55,7 +55,7 @@ if( isset($_POST["AutoComments"]) )
 
 if( isset($_POST["TeacherComments"]) )
 {
-    $sql = $sql . " TeacherComments='" . $_POST["TeacherComments"] . "'";
+    $sql = $sql . " TeacherComments='" . str_replace("'","''",$_POST["TeacherComments"]) . "'";
 }
 
 $sql =  $sql . " WHERE  QuestionID=" . $_POST["QuestionID"];
