@@ -17,7 +17,7 @@ function checkpassword($un, $pw){
     }
     //echo "Connected successfully to sql database\n";
     
-    $sql="SELECT * FROM Credentials WHERE Username='$un'";
+    $sql="SELECT * FROM Credential WHERE Username='$un'";
 
     $result = mysqli_query($conn, $sql);
     
