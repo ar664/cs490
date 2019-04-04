@@ -39,6 +39,17 @@ if(isset($result))
     $num_rows = 1;
 }
 
+$i = 0;
+while($row = mysqli_fetch_assoc($result))
+{
+    $i = $i+1;
+    if((int) $i != (int) $row["ID"])
+    {
+        $num_rows = $i;
+        break;
+    }
+}
+
 $sql="INSERT INTO Questions (ID, Question, Difficulty, TestCases, Topic, FunctionName) VALUES (" . $num_rows . ", '" . $_POST["Question"] . "', '" . $_POST["Difficulty"] . "', '" . $_POST["TestCases"] . "', '" . $_POST["Topic"] . "', '" . $_POST["FunctionName"] . "')";
 
 $result = mysqli_query($conn,$sql);

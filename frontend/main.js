@@ -4,7 +4,7 @@ var numCases = 2;
 
 // For searching through the question bank
 function query() {
-    //document.getElementById("version").innerHTML = "V 1.2.265";
+    //document.getElementById("version").innerHTML = "testing for cache";
 
     var xhttp = new XMLHttpRequest();
     var qRequest = "query=GetQuestions";
@@ -27,6 +27,7 @@ function query() {
             var resultsObj = JSON.parse(JSONresults);
             var searchResults = resultsObj.Questions;
             var queryTable = document.getElementById("qResults");
+            document.getElementById("testWork").innerHTML = "";
 
             // Clears the table to receive the other questions
             while(queryTable.children.length > 0) {
@@ -68,15 +69,8 @@ function query() {
                 rPointsBox.type = "text";
                 rPointsBox.style.width = "1rem";
                 rPoints.appendChild(rPointsBox);
+                rPoints.style.display = "none";
                 row.appendChild(rPoints);
-
-                var rCheck = document.createElement("TD");
-                var rCheckBox = document.createElement("INPUT");
-                rCheckBox.type = "checkbox";
-                rCheckBox.value = questionID;
-                rCheckBox.style.width = "1rem";
-                rCheck.appendChild(rCheckBox);
-                row.appendChild(rCheck);
 
                 var delQ = document.createElement("TD");
                 var delQBut = document.createElement("BUTTON");
@@ -90,9 +84,6 @@ function query() {
                 queryTable.appendChild(row);
             }
         }
-        /*else {
-            document.getElementById("testWork").innerHTML = this.readyState + " " + this.status;
-        }*/
     }
     xhttp.open("POST","betaFrontCurl.php", true);
     xhttp.setRequestHeader("Content-Type","application/x-www-form-urlencoded");
@@ -208,14 +199,14 @@ function teachExamView(mode) {
 
 // Changing tabs
 function changePage(e, pageName) {
-    var curTab, tabContent, tabLinks;
+    var tabContent, tabLinks;
     tabContent = document.getElementsByClassName("tabcontent");
-    for(curTab = 0; curTab < tabContent.length; curTab++) {
-        tabContent[curTab].style.display = "none";
+    for(let curTab of tabContent) {
+        curTab.style.display = "none";
     }
     tabLinks = document.getElementsByClassName("tablinks");
-    for(curTab = 0; curTab < tabLinks.length; curTab++) {
-        tabLinks[curTab].className = tabLinks[curTab].className.replace(" active", "");
+    for(let curLink of tabLinks) {
+        curLink.className = curLink.className.replace(" active", "");
     }
     if(pageName == "exEdit") {
         teachExamView("editing");
@@ -239,8 +230,11 @@ function addQuestion() {
         document.getElementById("ans1").value = "";
         document.getElementById("ans2").value = "";
         document.getElementById("tc1").value = "";
-        document.getElementById("tc2").value = ""; 
+        document.getElementById("tc2").value = "";
         document.getElementById("top").value = "";
+        for(i = 0; i < document.getElementsByClassName("check").length; i++) {
+            document.getElementsByClassName("check")[i].checked = false;
+        }
         while(numCases > 2) {
             delTC();
         }
@@ -254,6 +248,8 @@ function addQuestion() {
         var fName = document.getElementById("functionName").value;
         var tcIn = [];
         var tcOut = [];
+        var checks = document.getElementsByClassName("check");
+
         for(i = 1; i < numCases+1; i++) {
             tcIn.push(document.getElementById("tc" + i).value);
             tcOut.push(document.getElementById("ans" + i).value);    
@@ -262,7 +258,12 @@ function addQuestion() {
         tcOut.toString();
         var testCases = new Object();
         testCases.Input = "[" + tcIn + "]";
-        testCases.Output = "[" + tcOut + "]";
+        testCases.Output = "[" + tcOut + "]"
+        
+        var constraints = new Object();
+        constraints.while = checks[0].checked;
+        constraints.for = checks[1].checked;
+        constraints.print = checks[2].checked;
 
         // If any fields are empty
         if(question == null || question == "" || difficulty == null || difficulty == "" || topic == null || topic == "" || testCases == null || testCases == [] || fName == null || fName == "") {
@@ -270,13 +271,12 @@ function addQuestion() {
         }
         else {
             var xhttp = new XMLHttpRequest();
-            var addRequest = "query=InsertQuestion&Question=" + question + "&FunctionName=" + fName + "&Difficulty=" + difficulty + "&Topic=" + topic + "&TestCases=" + JSON.stringify(testCases);
+            var addRequest = "query=InsertQuestion&Question=" + question + "&FunctionName=" + fName + "&Difficulty=" + difficulty + "&Topic=" + topic + "&TestCases=" + JSON.stringify(testCases) + "&Constraints=" + JSON.stringify(constraints);
             var req = encodeURI(addRequest);
             xhttp.onreadystatechange = function() {
                 if(this.readyState == 4 && this.status == 200) {
                     var echoed = this.responseText;
                     var response = JSON.parse(echoed);
-                    console.log(response);
                     if(response.dbSuccess) {
                         document.getElementById("add").innerHTML = "Add Another Question";
                         document.getElementById("sysMsg").innerHTML = "Question added! Send another?"
@@ -303,32 +303,24 @@ function delQuestion(e) {
     while(curTarget && curTarget.tagName !== "TR") {
         curTarget = curTarget.parentNode;
     }
-    if(examEditingOn) {
-        rmFromExam(curTarget.id);
-        return;
-    }
 
-    else {
-        var xhttp = new XMLHttpRequest();
-        var delRequest = "query=DeleteQuestion&ID=" + curTarget.id;
-        xhttp.onreadystatechange = function() {
-            if(this.readyState == 4 && this.status == 200) {
-                var check = this.responseText;
-                document.getElementById("testWork").innerHTML = check;
-                var checkJSON = JSON.parse(check);
-                if(checkJSON.dbSuccess) {
-                    document.getElementById("testWork").innerHTML = "Question deleted.";
-                }
-                query();
+    var xhttp = new XMLHttpRequest();
+    var delRequest = "query=DeleteQuestion&ID=" + curTarget.id;
+    xhttp.onreadystatechange = function() {
+        if(this.readyState == 4 && this.status == 200) {
+            var check = this.responseText;
+            document.getElementById("testWork").innerHTML = check;
+            var checkJSON = JSON.parse(check);
+            if(checkJSON.dbSuccess) {
+                document.getElementById("testWork").innerHTML = "Question deleted.";
             }
-            /*else {
-                document.getElementById("status").innerHTML = this.readyState + " " + this.status;
-            }*/
+            query();
         }
-        xhttp.open("POST","betaFrontCurl.php", true);
-        xhttp.setRequestHeader("Content-Type","application/x-www-form-urlencoded");
-        xhttp.send(delRequest);
     }
+    xhttp.open("POST","betaFrontCurl.php", true);
+    xhttp.setRequestHeader("Content-Type","application/x-www-form-urlencoded");
+    xhttp.send(delRequest);
+
 }
 
 // Adding more Test Case Fields
@@ -374,45 +366,45 @@ function delTC() {
 }
 
 // Toggle Exam Making Mode
-function examOn() {
-    examEditingOn = true;
-    var table = document.getElementById("queryResults");
-    document.getElementById("examEdit").innerHTML = "Cancel Exam Creating";
-    document.getElementById("examEdit").setAttribute("onClick","examOff()");
-    //document.getElementById("makeExam").style.visibility = "visible";
-    document.getElementById("testWork").innerHTML = "";
-    /*var queryList = table.children;
-    for(k = 0; k < queryList.length; k++) {
-        queryList[k].children[3].style.visibility = "visible";
-        queryList[k].addEventListener("click", select(e));
-    } */
-}
-function examOff() {
-    examEditingOn = false;
-    //var table = document.getElementById("queryResults");
-    document.getElementById("examEdit").innerHTML = "Make Exam";
-    document.getElementById("examEdit").setAttribute("onClick","examOn()");
-    //document.getElementById("makeExam").style.visibility = "hidden";
-    /*var queryList = table.children;
-    for(m = 0; m < queryList.length; m++) {
-        queryList[m].removeEventListener("click", select(e));
-        queryList[m].children[3].value = "";
-        queryList[m].children[3].style.visibility = "hidden";
+function examToggle() {
+    var table = document.getElementById("qResults");
+    var queryList = table.children;
+    if (!examEditingOn) {
+        examEditingOn = true;
+        document.getElementById("examEdit").innerHTML = "Cancel Exam Creating";
+        document.getElementById("examEdit").setAttribute("onClick","examToggle()");
+        document.getElementById("makeExam").style.display = "inline-block";
+        document.getElementById("testWork").innerHTML = "";
+        for(let curRow of queryList) {
+            curRow.children[3].style.display = "";
+            curRow.addEventListener("click", select);
+        }
     }
-    for(p = 0; p < table.getElementByClassName("selected").length; p++) {
-        table.getElementByClassName("selected")[p].classList.toggle("selected");
-    }*/
+    else {
+        examEditingOn = false;
+        document.getElementById("examEdit").innerHTML = "Make Exam";
+        document.getElementById("examEdit").setAttribute("onClick","examToggle()");
+        document.getElementById("makeExam").style.display = "none";
+        for(let nowRow of queryList) {
+            nowRow.removeEventListener("click", select);
+            nowRow.children[3].children[0].value = "";
+            nowRow.children[3].style.display = "none";
+        }
+        var selRows = document.getElementsByClassName("selected");
+        for(i = 0; i < 3; i++) {
+            for(let element of selRows) {
+                element.className = element.className.replace("selected","");
+            }
+        }
+    }
 }
 
 // Adding Questions to the Exam and Posting It
 function addToExam() {
-    var table = document.getElementById("qResults");
-    var examQuestions = table.children;
-
-    var xhttp = new XMLHttpRequest();
-    for(s = 0; s < examQuestions.length; s++) {
-        if(examQuestions[s].children[4].firstChild.checked) {
-            var addRequest = "query=InsertExamQuestion&QuestionID=" + examQuestions[s].id + "&Points=" + examQuestions[s].children[3].firstElementChild.value;
+    var examQuestions = document.getElementsByClassName("selected");
+    for(let chosen of examQuestions) {
+            var xhttp = new XMLHttpRequest();
+            var addRequest = "query=InsertExamQuestion&QuestionID=" + chosen.id + "&Points=" + chosen.children[3].firstElementChild.value;
             var addReq = encodeURI(addRequest);
             xhttp.onreadystatechange = function() {
                 if(this.readyState == 4 && this.status == 200) {
@@ -433,8 +425,8 @@ function addToExam() {
             xhttp.open("POST","betaFrontCurl.php", true);
             xhttp.setRequestHeader("Content-Type","application/x-www-form-urlencoded");
             xhttp.send(addReq);
-        } 
     }
+    examToggle();
 }
 
 // Removes a question from Exam
@@ -557,14 +549,16 @@ function loadExam() {
 function submitExam() {
     var ansList = document.getElementsByTagName("textarea");
 
-    for(se = 0; se < ansList.length; se++) {
+    for(let answer of ansList) {
         var xhttp = new XMLHttpRequest();
-        var submitRequest = "query=UpdateExamQuestion&QuestionID=" + ansList[se].id + "&Answer=" + ansList[se].value;
-        console.log(ansList[se].id + " " + ansList[se].value);
+        var submitRequest = "query=UpdateExamQuestion&QuestionID=" + answer.id + "&Answer=" + answer.value;
+        console.log(answer.id + " " + answer.value);
         var subReq = encodeURI(submitRequest);
         xhttp.onreadystatechange = function() {
+            console.log(this.readyState + " " + this.status);
             if(this.readyState == 4 && this.status == 200) {
                 var sEchoJSON = this.responseText;
+                console.log(sEchoJSON);
                 var sEcho;
                 try{
                     sEcho = JSON.parse(sEchoJSON);
@@ -586,10 +580,10 @@ function submitExam() {
 function editExam() {
     var massOfData = document.getElementById("examQuestions");
     var elements = massOfData.children;
-    for(ee = 0; ee < elements.length; ee++) {
+    for(let eQuestion of elements) {
         var xhttp = new XMLHttpRequest();
-        var updateReq = "query=UpdateExamQuestion&QuestionID=" + elements[ee].id + + "&Points=" + elements[ee].children[2].firstElementChild.value;
-        console.log(elements[ee].id + " " + elements[ee].children[2].firstElementChild.value);
+        var updateReq = "query=UpdateExamQuestion&QuestionID=" + eQuestion.id + + "&Points=" + eQuestion.children[2].firstElementChild.value;
+        console.log(eQuestion.id + " " + eQuestion.children[2].firstElementChild.value);
         xhttp.onreadystatechange = function() {
             if(this.readyState == 4 && this.status == 200) {
                 var strJSON = this.responseText;
@@ -610,9 +604,10 @@ function editExam() {
 function resetExam() {
     var examTable = document.getElementById("examQuestions");
     var examElements = examTable.children;
-    for(rX = 0; rX < examElements.length; rX++) {
+    for(let gradedQ of examElements) {
         var xhttp = new XMLHttpRequest();
-        var req = "query=UpdateExamQuestion&QuestionID=" + examElements[rX].id + "&Answer=''&PointsGiven=''&AutoComments=''&TeacherComments=''";
+        var req = "query=UpdateExamQuestion&QuestionID=" + gradedQ.id + "&Answer=&PointsGiven=0&AutoComments=&TeacherComments=";
+        console.log(req);
         var codedReq = encodeURI(req);
         xhttp.onreadystatechange = function() {
             console.log(this.readyState + " " + this.status);
@@ -648,13 +643,8 @@ function resetExam() {
 
 
 // To enable user-friendly selection
-function select(e) {
-    e = e || window.event;
-    var target = e.srcElement || e.target;
-    while(target && target.nodeName !== "TR") {
-        target = target.parentNode;
-    }
-    target.classList.toggle("selected");
+function select() {
+    this.classList.toggle("selected");
 }
 
 // For allowing tab in textarea
