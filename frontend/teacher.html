@@ -74,6 +74,9 @@
             font-size: 1rem;
             width: 5rem;
         }
+        .check {
+            width: 1rem;
+        }
         .header {
             font-size: 1.5rem;
         }
@@ -96,12 +99,13 @@
         .selected {
             background-color: black;
             color: greenyellow;
+            border-color: greenyellow;
         }
         /* Style the tab */
         .tab {
         float: left;
-        border: 1px solid #ccc;
-        background-color: #f1f1f1;
+        border: none;
+        background-color: lightsalmon;
         width: 15%;
         }
 
@@ -127,7 +131,7 @@
 
         /* Create an active/current "tab button" class */
         .tab button.active {
-        background-color: #ccc;
+        background-color:yellowgreen;
         }
 
         /* Style the tab content */
@@ -152,6 +156,7 @@
             <button class="tablinks" onclick="changePage(event, 'gradeExam')">Grade Exam</button>
         </div>
 
+        <!-- Add a Question Page-->
         <div class="tabcontent" id="qAdd">
             <h2>New Question</h2>
             <strong>Topic: </strong><input type="text" name="topic" id="top" style="width: 15rem;" placeholder="i.e. Functions, Loops, Strings, etc.">
@@ -161,7 +166,8 @@
                 <option value="Medium">Medium</option>
                 <option value="Hard">Hard</option>
             </select><br><br>
-            <strong>Function Name: <input type="text" id="functionName" style="width: 15rem;" placeholder="i.e. add, vowelCount, etc"></strong>
+            <strong>Function Name: <input type="text" id="functionName" style="width: 15rem;" placeholder="i.e. add, vowelCount, etc"></strong><br><br>
+            <strong> Must Use: <input type="checkbox" class="check" value="while">While Loop - <input type="checkbox" class="check" value="for">For Loop - <input type="checkbox" class="check" value="print">Print Statement</strong>
             <h3>Question:</h3>
             <textarea name="question" id="q" rows="20" cols="100" onkeydown="insertTab(this,event);" placeholder="Write a function named (function name) that does blah, blah, blah"></textarea><br><br>
             <div style="text-align:left; font-size: 1.5rem;"><b>Test Cases</b></div>
@@ -182,10 +188,10 @@
                 </tr>
             </table><br><br>
             <button id="add" onclick="addQuestion()">Add Question</button><br><br>
-
-            <p id="sysMsg" style="padding-top: 4rem;"></p> <!-- FOR ERROR MESSAGES-->
+            <p id="sysMsg" style="padding-top: 4rem;"></p>
         </div>
 
+        <!-- Edit Exam Page -->
         <div class="tabcontent" id="exEdit" style="display: none">
             <h3>Exam Questions</h3>
             <table name="examView">
@@ -204,6 +210,7 @@
             <p id="stat"></p>
         </div>
 
+        <!-- Grading Page-->
         <div class="tabcontent" id="gradeExam" style="display:none">
             <div id="examStatus">Exam not completed by student yet.</div>
             <button onclick="teachExamView('grading')">Finalize Points</button>
@@ -218,7 +225,7 @@
             <h3>
                 <input type="text" name="search" id="s" style="width:15rem; font-size: 1.5rem; display:inline-block; vertical-align: middle; border: none;" value="" placeholder="Keyword">
                 <button onclick="query()" style="display:inline-block; vertical-align: middle; padding:0.375rem; font-size:1rem;">Search!</button>
-                <button id="examEdit" onclick="examOn()">Make Exam</button><br>
+                <button id="examEdit" onclick="examToggle('on')">Make Exam</button><br>
                 In: <input type="text" name="qTopic" id="t" value="" placeholder="Topic"><br>
                 Which is: <select name="qDifficulty" id="d" size="1" value="">
                     <option value ="">Any Difficulty</option>
@@ -238,7 +245,7 @@
                 <tbody id="qResults">
                 </tbody>
             </table><br>
-            <button onclick="addToExam()" id="makeExam">Publish Exam</button>
+            <button onclick="addToExam()" id="makeExam" style="display: none">Publish Exam</button>
             <p id="testWork"></p>
             <p id="status"></p>
         </div>
