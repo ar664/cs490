@@ -13,7 +13,7 @@ if (mysqli_num_rows($result) > 0)
     $sql2 = "SELECT * from Questions WHERE ";
     $exam = ' "Exam": [';
     while($row = mysqli_fetch_assoc($result)) {
-        $exam = $exam .'{"QuestionID": ' . $row["QuestionID"] . ' , "Points":' . $row["Points"] . ' , "PointsGiven":' . $row["PointsGiven"]  . ' , "Answer":' . json_encode($row["Answer"], JSON_UNESCAPED_UNICODE) . ' , "AutoComments":' . json_encode($row["AutoComments"], JSON_UNESCAPED_UNICODE) . ' , "TeacherComments":' . json_encode($row["TeacherComments"], JSON_UNESCAPED_UNICODE) . '},';
+        $exam = $exam .'{"QuestionID": ' . $row["QuestionID"] . ' , "Points":' . $row["Points"] . ' , "PointsGiven":' . $row["PointsGiven"] . ' , "FinalGrade":' . $row["FinalGrade"]  . ' , "Answer":' . json_encode($row["Answer"], JSON_UNESCAPED_UNICODE) . ' , "AutoComments":' . json_encode($row["AutoComments"], JSON_UNESCAPED_UNICODE) . ' , "TeacherComments":' . json_encode($row["TeacherComments"], JSON_UNESCAPED_UNICODE) . '},';
         $sql2 = $sql2 . "ID=" . $row["QuestionID"] . " OR ";
     }
     $exam = $exam . '{"Test":false}]';

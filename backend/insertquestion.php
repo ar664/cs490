@@ -27,6 +27,11 @@ if(!(isset($_POST['FunctionName'])))
     die('{"POST":"FunctionName not set"}');
 }
 
+if(!isset($_POST['Constraints']))
+{
+    die('{"POST":"Constraints"}');
+}
+
 include 'connect2.php';
 
 $sql="SELECT * FROM Questions";
@@ -50,7 +55,7 @@ while($row = mysqli_fetch_assoc($result))
     }
 }
 
-$sql="INSERT INTO Questions (ID, Question, Difficulty, TestCases, Topic, FunctionName) VALUES (" . $num_rows . ", '" . $_POST["Question"] . "', '" . $_POST["Difficulty"] . "', '" . $_POST["TestCases"] . "', '" . $_POST["Topic"] . "', '" . $_POST["FunctionName"] . "')";
+$sql="INSERT INTO Questions (ID, Question, Difficulty, TestCases, Topic, FunctionName, Constraints) VALUES (" . $num_rows . ", '" . $_POST["Question"] . "', '" . $_POST["Difficulty"] . "', '" . $_POST["TestCases"] . "', '" . $_POST["Topic"] . "', '" . $_POST["FunctionName"] . "', '" . $_POST["Constraints"] . "')";
 
 $result = mysqli_query($conn,$sql);
 $error = mysqli_error($conn);
