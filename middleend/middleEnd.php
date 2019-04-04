@@ -1,9 +1,14 @@
 <?php
-global $error;
+global $errorlog;
 include 'jsonErrorLog.php';
 
 $username = $_POST['Username'];
 $password = $_POST['Password'];
+
+$exampleJson = '{"POST":"Good json"}';
+json_decode($exampleJson);
+error_log_json(json_last_error());
+echo $errorlog;
 
 if (isset($username) && isset($password)){
 
