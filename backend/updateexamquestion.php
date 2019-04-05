@@ -7,7 +7,7 @@ if(!isset($_POST["QuestionID"]))
     die('{"POST":"QuestionID not set"}');
 }
 
-if( !(isset($_POST["Points"]) || isset($_POST["Answer"])  || isset($_POST["PointsGiven"]) || isset($_POST["Points"]) || isset($_POST["AutoComments"]) || isset($_POST["TeacherComments"]) ))
+if( !(isset($_POST["Points"]) || isset($_POST["Answer"])  || isset($_POST["PointsGiven"]) || isset($_POST["FinalGrade"]) || isset($_POST["AutoComments"]) || isset($_POST["TeacherComments"]) ))
 {
     die('{"POST":"no variables set"}');
 }
@@ -15,6 +15,15 @@ if( !(isset($_POST["Points"]) || isset($_POST["Answer"])  || isset($_POST["Point
 include 'connect2.php';
 
 $sql = "UPDATE Exam SET ";
+
+if( isset($_POST["FinalGrade"]) )
+{
+    $sql = $sql . " FinalGrade=" . $_POST["FinalGrade"];
+    if( isset($_POST["Points"]) || isset($_POST["PointsGiven"]) || isset($_POST["Answer"]) || isset($_POST["AutoComments"]) || isset($_POST["TeacherComments"]) )
+    {
+        $sql = $sql . ",";
+    }
+}
 
 if( isset($_POST["Points"]) )
 {

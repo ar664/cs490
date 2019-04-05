@@ -7,7 +7,7 @@ if( !isset($_POST["ID"]) )
     die('{"POST":"ID not set"}');
 }
 
-if( !(isset($_POST["Question"]) || isset($_POST["Difficulty"]) || isset($_POST["TestCases"]) || isset($_POST["Topic"]) ) )
+if( !(isset($_POST["Question"]) || isset($_POST["Difficulty"]) || isset($_POST["TestCases"]) || isset($_POST["Topic"])  || isset($_POST["Constraints"])) )
 {
     die('{"POST":"no variables set"}');
 }
@@ -15,6 +15,14 @@ if( !(isset($_POST["Question"]) || isset($_POST["Difficulty"]) || isset($_POST["
 include 'connect2.php';
 
 $sql = "UPDATE Questions SET ";
+
+if( isset($_POST["Constraints"]) ) {
+    $sql = $sql . " Constraints='" . $_POST["Constraints"] . "'";
+    if( isset($_POST["Questions"]) || isset($_POST["Difficulty"]) || isset($_POST["TestCases"]) || isset($_POST["Topic"]) )
+    {
+        $sql = $sql . ",";
+    }
+}
 
 if( isset($_POST["Question"]) )
 {

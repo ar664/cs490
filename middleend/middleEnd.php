@@ -1,6 +1,14 @@
 <?php
+global $errorlog;
+include 'jsonErrorLog.php';
+
 $username = $_POST['Username'];
 $password = $_POST['Password'];
+
+$exampleJson = '{"POST":"Good json"}';
+json_decode($exampleJson);
+error_log_json(json_last_error());
+echo $errorlog;
 
 if (isset($username) && isset($password)){
 
@@ -41,7 +49,7 @@ if(isset($_POST["query"])) {
            break;
          case "DeleteExamQuestion":
            $url = "https://web.njit.edu/~ar664/cs490/backend/deleteexamquestion.php";
-           break;
+           break; 
 	 default:
 	   echo "Query \"$query\" not found" . PHP_EOL;
 	   return;
@@ -71,7 +79,8 @@ if(isset($_POST["query"])) {
 				return;
 			}
 			
-			//Create the file from Answer
+		
+		        //Create the file from Answer
 			$answer=$_POST['Answer'];
 			//echo "This is the answer: " .$answer . PHP_EOL;
 
@@ -82,7 +91,9 @@ if(isset($_POST["query"])) {
 		
 		        //Get all The questions
 			$jsonTestCases="nothing";
-			$functName="nothing";	
+			$functName="nothing";
+			$actualQuestion="";
+			$jsonQuestion="";
 			$url3="https://web.njit.edu/~ar664/cs490/backend/getquestions.php";
 			$ch3=curl_init($url3);
 			curl_setopt($ch3, CURLOPT_POST, TRUE); // store result in var
@@ -94,15 +105,20 @@ if(isset($_POST["query"])) {
 		        //echo "Here are all the questions: " . var_dump($arrayQuestions)  . PHP_EOL;	
 			curl_close($ch3);
 		       
-			//Get functionName and TestCases from GetQuestions
+			//Get functionName, TestCases, and the Question itself  
+			//from GetQuestions when given the QuestionID
 			foreach($arrayQuestions as $json_question => $value){
 			  //echo "Question value: " . $value->ID . PHP_EOL;
-			  if ( $value->ID == $_POST["QuestionID"]){
-	                        //echo "Here's the question with ID:" . $_POST["QuestionID"] . PHP_EOL . 
-	                        //"Question:  " . $value->Question . PHP_EOL;
+			  if ($value->ID == $_POST["QuestionID"]){
+	                         //echo "Here's the question with ID:" . $_POST["QuestionID"] . PHP_EOL . 
+	                         //"Question:  " . $value->Question . PHP_EOL;
 				 $jsonTestCases=$value->TestCases;
-                               //echo "JsonTestCases is: " . var_dump($jsonTestCases) . PHP_EOL;
+                                 //echo "JsonTestCases is: " . var_dump($jsonTestCases) . PHP_EOL;
 				 $functName=$value->FunctionName;
+				 $actualQuestion=$value->Question;
+				 $jsonConstraints= $value->Constraints;
+				 echo "Constraints are:" . PHP_EOL;
+				 var_dump($jsonConstraints);
 			  }
 		       }
 
@@ -114,19 +130,18 @@ if(isset($_POST["query"])) {
 			$json_getExam= curl_exec($ch4);
 			$examValues= json_decode($json_getExam);
 		        $examArry= $examValues->Exam;
-			//$points=$exam->Questions;
 			//echo "Here is the exam stuff: " . var_dump($examArry) . PHP_EOL;	
 			curl_close($ch4);
 
 			//Get The questions Total Point worth
 			foreach($examArry as $json_exam=>$exam_Value){
-                           //echo "Question ID: " . $exam_Value->QuestionID . PHP_EOL;
-			  if ( $exam_Value->QuestionID == $_POST["QuestionID"]){
+                          // echo "Question ID: " . $exam_Value->QuestionID . PHP_EOL;
+			  if ($exam_Value->QuestionID == $_POST["QuestionID"]){
                                 //echo "Question with ID: " . $_POST["QuestionID"] . 
                                  //" is worth $exam_Value->Points Points" . PHP_EOL; 
-				 $pointsGiven=$exam_Value->Points;
+				 $pointsGiven= $exam_Value->Points;
 				 $totalPoints= $exam_Value->Points;
-				// echo "Points is now set to: " . $pointsGiven . PHP_EOL;
+				 //echo "Points is now set to: " . $pointsGiven . PHP_EOL;
 			  }
 		       }
 
@@ -160,9 +175,51 @@ if(isset($_POST["query"])) {
 			$scriptPath=exec('pwd');
 			$filepath=$scriptPath . '/' . "student_answer.py"; 
 		        file_put_contents($filepath, $answer);
+                        
+			//Check for the Basic Constraints within the student's Answer: |for|While|print|
+			//If the value of a constraint is true | If the constraint is false
+			//check for a match within the string  | Do nothing
+			//If a match is found do nothing otherwise subtracts points
 
+			//echo "Json value before decode:" . PHP_EOL;
+			//echo $jsonConstraints;    
+			//var_dump($jsonTestCases);
+		        
+			$jsonTestCases=$json_encode($jsonTestCases);	
+                        $jsonError=json_last_error();
+			//echo jsonErrorLog($jsonError);
+			
+			$constraints=json_decode($jsonTestCases);
+			errorlog();
+			echo $error . PHP_EOL;
+			echo "Constraints decoded holds:" . PHP_EOL;
+			//var_dump($constraints);
+			echo PHP_EOL;
+
+		/*	foreach($constraints as $constraint=>$value){
+			   $check=$json_decode($value);
+			   echo "Constraint: \"$constraint\" value: $check" . PHP_EOL;
+			   echo "Boolean" . PHP_EOL;
+			   var_dump($check);
+			   if ($check){
+			     $pos=strpos($answer, $constraint);
+                             $len= strlen($constraint);
+			     echo "Constraint: \"$constraint\" is in the If statement";
+			     if (!empty($pos)){
+			         echo "\"$constraint\"'s Position in the string is: $pos\n";
+		                 echo "MatchFound: \n" . substr($studentAnswer, $pos, $len) 
+			     } else{ echo "-5 points\n";
+			             $pointsGiven-=5; 
+			             echo "MatchNotFound:\nThe constraint \"$cstrt\" 
+				     doesn't exist within the string\n";
+			     	   }
+			   } 
+			}       */
+                      
+
+ 
                         //echo "This is Json: " . var_dump($jsonTestCases) . PHP_EOL;	
-                       //echo "Testcases below:" . var_dump($testCases) . PHP_EOL; 
+                        //echo "Testcases below:" . var_dump($testCases) . PHP_EOL; 
 			if ($jsonTestCases == NULL) {
 	                        //echo "Testcases within if statement:" . var_dump($testCases["Input"]) . PHP_EOL; 
 				//echo "TestCases: Invalid json. Please enter valid json for TestCases param.";
@@ -170,7 +227,7 @@ if(isset($_POST["query"])) {
 			}
 
 
-			//Currentyl fixing the forloop for testCases
+			//Forloop for testCases to be split one by one and executed
 			$inputCases=$jsonTestCases->Input;
 			$length=count($inputCases);
 			$outputCases=$jsonTestCases->Output;
@@ -181,8 +238,10 @@ if(isset($_POST["query"])) {
 				$data="\n\n#For Testing Purposes\n";
 				$temp="";
                              
-			       //write the input Elements in student function 
-			       //so that it runs
+			       // ForLoop checks the input Elements for strings 
+			       // that can be converted to Int 
+			       // and stores them as a string of arguments 
+			       // to be written to the student answer file 
 			      for($j=0; $j < $inputSize; $j++){
 				 if(is_numeric($expInput[$j])){
 				   $strtoInt=intval($expInput[$j]);
@@ -209,9 +268,9 @@ if(isset($_POST["query"])) {
 				      $doubleRightParenth = strpos($data, ")");
 				     }
 				    // echo "Data Currently contians: $data\n";
-				     $diffPos = $doubleRightParenth - $endingParenth;
+				    $diffPos = $doubleRightParenth - $endingParenth;
 				    // echo "doubleRightPanranthese:$doubleRightParenth   endingParenth:$endingParenth  difPos:$diffPos\n"; 
-				     $data = substr_replace($data, '', $endingParenth, $diffPos);
+				   $data = substr_replace($data, '', $endingParenth, $diffPos);
 				  }
                                }
                                //echo "Data after replace contains: $data" . PHP_EOL;
@@ -223,10 +282,9 @@ if(isset($_POST["query"])) {
 				// expInput must always be an array with two arguments inside to work
 				$output=array(); 
 		                file_put_contents($filepath, $data, FILE_APPEND);
-				exec($pyBinPath . " " . "$scriptPath/student_answer.py " .  '2>&1', $output, $status);
-				
-				
-				$actualOutput = $output[0]; //implode($output)
+				exec($pyBinPath . " " . "$scriptPath/student_answer.py " . '2>&1', $output, $status);
+					
+				$actualOutput = $output[0]; 
 				
 				//echo "ExpectedOutput is " . var_dump($expOutput) . PHP_EOL;
 			        //echo "Whats in Output: " . var_dump($output) . PHP_EOL;
@@ -268,7 +326,7 @@ if(isset($_POST["query"])) {
 			
 			// We are done running the test cases so now lets send the points given.
        			   $_POST['PointsGiven']=$pointsGiven;
-                           //echo "student received " . $pointsGiven . " points" . PHP_EOL;
+                           echo "student received " . $pointsGiven . " points" . PHP_EOL;
                            //echo "The AutoComments are: \n";
 			   //var_dump($_POST['AutoComments']);
 			   $ch2 = curl_init($url);
@@ -283,5 +341,10 @@ if(isset($_POST["query"])) {
 }else{
 echo "Enter Username and Password Post Vars" . PHP_EOL; 
 }
+
+
+
+
+
 
 ?>
