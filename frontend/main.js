@@ -35,35 +35,93 @@ function query() {
             }
 
             for(q = 0; q < searchResults.length-1; q++) {
+                
+                // All Info
                 var questionName = searchResults[q].Question;
                 var questionTopic = searchResults[q].Topic;
                 var questionDifficulty = searchResults[q].Difficulty;
                 var questionID = searchResults[q].ID;
-                /*var questionTC = searchResults[q].TestCases;
-                var end = questionName + questionTopic + questionDifficulty + questionID;
-                for(p = 0; p < questionTC.length; p++) {
-                    end+=questionTC[p];
-                }*/
-                //document.getElementById("testWork").innerHTML = end;
+                var fName = searchResults[q].FunctionName;
+                var questionTC = searchResults[q].TestCases;
+                var questionNoNo = searchResults[q].Constraints;
+                console.log(questionTC);
+                console.log(questionNoNo);
+
+                // Row
                 var row = document.createElement("TR");
                 row.id = questionID;
 
+                // ID Column
+                var rID = document.createElement("TD");
+                var rIDContent = document.createTextNode(questionID);
+                rID.appendChild(rIDContent);
+                row.appendChild(rID);
+
+                // Question Column
                 var rName = document.createElement("TD");
+                var rNameCollapse = document.createElement("BUTTON");
+                rNameCollapse.className = "collapse";
+                var rNameLabel = document.createTextNode(fName);
+                rNameCollapse.appendChild(rNameLabel);
+                rName.appendChild(rNameCollapse);
+
+                // Full Question Info in Question Column
+                var rNameContainer = document.createElement("DIV");
+                rNameContainer.className = "content";
+                var textSection = document.createElement("P");
                 var rNameContent = document.createTextNode(questionName);
-                rName.appendChild(rNameContent);
-                rName.className = "question";
+                textSection.appendChild(rNameContent);
+                rNameContainer.appendChild(textSection);  
+
+                var inSection = document.createElement("DIV");
+                var inString = "Input: " + questionTC.Input;
+                var inText = document.createTextNode(inString);
+                inSection.appendChild(inText);
+                rNameContainer.appendChild(inSection);
+
+                var outSection = document.createElement("DIV");
+                var outString = "Output: " + questionTC.Output;
+                var outText = document.createTextNode(outString);
+                outSection.appendChild(outText);
+                rNameContainer.appendChild(outSection);
+
+                var constraintSection = document.createElement("DIV");
+                var constraintString = "";
+                if(questionNoNo.forLoop) {
+                    constraintString += "For Loop";
+                }
+                if(questionNoNo.print) {
+                    if(constraintString.length > 0) {
+                        constraintString += ", ";
+                    }
+                    constraintString += "Print Statement";
+                }
+                if(questionNoNo.while) {
+                    if(constraintString.length > 0) {
+                        constraintString += ", ";
+                    }
+                    constraintString += "While Loop";
+                }  
+                var constraintText = document.createTextNode("Must Use: " + constraintString);
+                constraintSection.appendChild(constraintText);
+                rNameContainer.appendChild(constraintSection);
+
+                rName.appendChild(rNameContainer);
                 row.appendChild(rName);
 
+                // Topic Column
                 var rTopic = document.createElement("TD");
                 var rTopicContent = document.createTextNode(questionTopic);
                 rTopic.appendChild(rTopicContent);
                 row.appendChild(rTopic);
 
+                // Difficulty Column
                 var rDifficulty = document.createElement("TD");
                 var rDifficultyContent = document.createTextNode(questionDifficulty);
                 rDifficulty.appendChild(rDifficultyContent);
                 row.appendChild(rDifficulty);
 
+                // Points Column
                 var rPoints = document.createElement("TD");
                 var rPointsBox = document.createElement("INPUT");
                 rPointsBox.type = "text";
@@ -72,6 +130,7 @@ function query() {
                 rPoints.style.display = "none";
                 row.appendChild(rPoints);
 
+                // Delete Button
                 var delQ = document.createElement("TD");
                 var delQBut = document.createElement("BUTTON");
                 var delQSymbol = document.createTextNode("X");
@@ -82,6 +141,18 @@ function query() {
                 row.appendChild(delQ); 
 
                 queryTable.appendChild(row);
+            }
+            var coll = document.getElementsByClassName("collapse");
+            for(let bar of coll) {
+                bar.addEventListener("click", function() {
+                    this.classList.toggle("open");
+                    var content = this.nextElementSibling;
+                    if(content.style.maxHeight) {
+                        content.style.maxHeight = null;
+                    } else {
+                        content.style.maxHeight = content.scrollHeight + "px";
+                    }
+                });
             }
         }
     }
@@ -114,8 +185,25 @@ function teachExamView(mode) {
                     curRow.appendChild(curID);
 
                     var curQuest = document.createElement("TD");
+                    var curQuestBut = document.createElement("BUTTON");
+                    curQuestBut.className = "collapse";
+                    curQuestBut.addEventListener("click",function() {
+                        this.classList.toggle("open");
+                        var content = this.nextElementSibling;
+                        if(content.style.maxHeight) {
+                            content.style.maxHeight = null;
+                        } else {
+                            content.style.maxHeight = content.scrollHeight + "px";
+                        }
+                    });
+                    var questLabel = document.createTextNode(questArray[qNum].FunctionName);
+                    curQuestBut.appendChild(questLabel);
+                    curQuest.appendChild(curQuestBut);
+                    var questContainer = document.createElement("DIV");
+                    questContainer.className = "content";
                     var questText = document.createTextNode(questArray[qNum].Question);
-                    curQuest.appendChild(questText);
+                    questContainer.appendChild(questText);
+                    curQuest.appendChild(questContainer);
                     curRow.appendChild(curQuest);
 
                     var curPoints = document.createElement("TD");
@@ -232,8 +320,9 @@ function addQuestion() {
         document.getElementById("tc1").value = "";
         document.getElementById("tc2").value = "";
         document.getElementById("top").value = "";
-        for(i = 0; i < document.getElementsByClassName("check").length; i++) {
-            document.getElementsByClassName("check")[i].checked = false;
+        var constraintChecks = document.getElementsByClassName("check");
+        for(let box of constraintChecks) {
+            box.checked = false;
         }
         while(numCases > 2) {
             delTC();
@@ -258,7 +347,7 @@ function addQuestion() {
         tcOut.toString();
         var testCases = new Object();
         testCases.Input = "[" + tcIn + "]";
-        testCases.Output = "[" + tcOut + "]"
+        testCases.Output = "[" + tcOut + "]";
         
         var constraints = new Object();
         constraints.while = checks[0].checked;
@@ -376,8 +465,11 @@ function examToggle() {
         document.getElementById("makeExam").style.display = "inline-block";
         document.getElementById("testWork").innerHTML = "";
         for(let curRow of queryList) {
-            curRow.children[3].style.display = "";
-            curRow.addEventListener("click", select);
+            curRow.children[4].style.display = "";
+            curRow.children[0].addEventListener("click", select);
+            curRow.children[1].children[1].addEventListener("click", select);
+            curRow.children[2].addEventListener("click", select);
+            curRow.children[3].addEventListener("click", select);
         }
     }
     else {
@@ -387,11 +479,14 @@ function examToggle() {
         document.getElementById("makeExam").style.display = "none";
         for(let nowRow of queryList) {
             nowRow.removeEventListener("click", select);
-            nowRow.children[3].children[0].value = "";
-            nowRow.children[3].style.display = "none";
+            nowRow.children[1].children[1].removeEventListener("click", select);
+            nowRow.children[2].removeEventListener("click", select);
+            nowRow.children[3].removeEventListener("click", select);
+            nowRow.children[4].children[0].value = "";
+            nowRow.children[4].style.display = "none";
         }
         var selRows = document.getElementsByClassName("selected");
-        for(i = 0; i < 3; i++) {
+        while(selRows.length > 0) {
             for(let element of selRows) {
                 element.className = element.className.replace("selected","");
             }
@@ -402,31 +497,47 @@ function examToggle() {
 // Adding Questions to the Exam and Posting It
 function addToExam() {
     var examQuestions = document.getElementsByClassName("selected");
-    for(let chosen of examQuestions) {
-            var xhttp = new XMLHttpRequest();
-            var addRequest = "query=InsertExamQuestion&QuestionID=" + chosen.id + "&Points=" + chosen.children[3].firstElementChild.value;
-            var addReq = encodeURI(addRequest);
-            xhttp.onreadystatechange = function() {
-                if(this.readyState == 4 && this.status == 200) {
-                    var echoed = this.responseText;
-                    var response = JSON.parse(echoed);
-                    if(response.dbSuccess) {
-                        document.getElementById("testWork").innerHTML = "Exam Posted.";
-                        teachExamView('editing');
+    var fieldsFilled = false;
+    for(let verify of examQuestions) {
+        var points = verify.children[4].firstElementChild.value;
+        if(points == "" || points == "0") {
+            fieldsFilled = false;
+            break;
+        }
+        else {
+            fieldsFilled = true;
+        }
+    }
+    if(fieldsFilled) {
+        for(let chosen of examQuestions) {
+                var xhttp = new XMLHttpRequest();
+                var addRequest = "query=InsertExamQuestion&QuestionID=" + chosen.id + "&Points=" + chosen.children[4].firstElementChild.value;
+                var addReq = encodeURI(addRequest);
+                xhttp.onreadystatechange = function() {
+                    if(this.readyState == 4 && this.status == 200) {
+                        var echoed = this.responseText;
+                        var response = JSON.parse(echoed);
+                        if(response.dbSuccess) {
+                            document.getElementById("testWork").innerHTML = "Exam Posted.";
+                            teachExamView('editing');
+                        }
+                        else {
+                            document.getElementById("testWork").innerHTML = "Question Already in Exam.";
+                        }
                     }
                     else {
-                        document.getElementById("testWork").innerHTML = "Question Already in Exam.";
+                        document.getElementById("testWork").innerHTML = "Error Making Exam.";
                     }
                 }
-                else {
-                    document.getElementById("testWork").innerHTML = "Error Making Exam.";
-                }
-            }
-            xhttp.open("POST","betaFrontCurl.php", true);
-            xhttp.setRequestHeader("Content-Type","application/x-www-form-urlencoded");
-            xhttp.send(addReq);
+                xhttp.open("POST","betaFrontCurl.php", true);
+                xhttp.setRequestHeader("Content-Type","application/x-www-form-urlencoded");
+                xhttp.send(addReq);
+        }
+        examToggle();
     }
-    examToggle();
+    else {
+        document.getElementById("testWork").innerHTML = "All questions going to the Exam must have a valid point value. (At least 1)";
+    }
 }
 
 // Removes a question from Exam
@@ -644,7 +755,11 @@ function resetExam() {
 
 // To enable user-friendly selection
 function select() {
-    this.classList.toggle("selected");
+    var element = this;
+    while(element.tagName != "TR") {
+        element = element.parentNode;
+    }
+    element.classList.toggle("selected");
 }
 
 // For allowing tab in textarea
