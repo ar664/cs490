@@ -44,11 +44,8 @@ if(isset($_POST["query"])) {
          case "DeleteExamQuestion":
            $url = "https://web.njit.edu/~ar664/cs490/backend/deleteexamquestion.php";
            break; 
-         case "ReleaseExam":
-           $url = "https://web.njit.edu/~ar664/cs490/backend/getexam.php";
-           break;
 	 case "GetFinalGrade":
-           $url = "https://web.njit.edu/~ar664/cs490/backend/getFinalGrade.php";
+           $url = "https://web.njit.edu/~ar664/cs490/backend/getfinalgrade.php";
            break;
 	 case "SetFinalGrade":
            $url = "https://web.njit.edu/~ar664/cs490/backend/setfinalgrade.php";
@@ -62,7 +59,8 @@ if(isset($_POST["query"])) {
 	//var_dump($_POST);
 	//echo "Answer is: \n" . var_dump($_POST['Answer']) . PHP_EOL;
 	//HTML form submits will sometimes submit blank strings so empty is necessary
-	if (isset($_POST['Answer']) == FALSE || empty($_POST['Answer'])){
+	if ((isset($_POST['Answer']) == FALSE && $query != "SetFinalGrade") 
+	     || (empty($_POST['Answer']) && $query != "SetFinalGrade")){
 	      //  echo "I don't have an answer\n";
 		$ch1 = curl_init($url);
 		curl_setopt($ch1, CURLOPT_POST, TRUE); // store result in var
@@ -150,9 +148,8 @@ if(isset($_POST["query"])) {
 	       }
 
 
-		//echo "Json_TestCases: " . $jsonTestCases;
-		//StringSearch:
-
+		//if "def" or ( not in the student's Function 
+		//give them a zero because function will not compile 
 		$defFirstIdx = stripos($answer, "def ");
 		$parensFirstIdx = stripos($answer, "(");
 		// echo $defFirstIdx, " ", $parensFirstIdx;
@@ -164,16 +161,17 @@ if(isset($_POST["query"])) {
 			return;
 		}
 
+		// replace the functionName in studentFunction
 		$answerFuncNameStartIdx = $defFirstIdx + 4;
 		$answerFuncNameLen = $parensFirstIdx - $answerFuncNameStartIdx;
 		$answerFuncName = substr($answer, $answerFuncNameStartIdx, $answerFuncNameLen);
-		// replace the functionName in answer string
 	
 		if ($answerFuncName != $functName) {
 			//echo "Function name is incorrect So I'm taking away 10 points" . PHP_EOL;
 			//echo "answerFuncName:$answerFuncName   functName:$functName" . PHP_EOL;
 			$pointsGiven -= 10;
 		}
+		
 		$answer = substr_replace($answer, "answer", $answerFuncNameStartIdx, $answerFuncNameLen);
 		$pyBinPath=exec('which python');
 		$scriptPath=exec('pwd');
@@ -184,7 +182,6 @@ if(isset($_POST["query"])) {
 		//If the value of a constraint is true | If the constraint is false
 		//check for a match within the string  | Do nothing
 		//If a match is found do nothing otherwise subtracts points
-
 		foreach($constraints as $constraint=>$value){
 		   $checkConstraint=$value;
 		   //echo "Constraint: \"$constraint\" value: $checkConstraint" . PHP_EOL;
@@ -202,6 +199,11 @@ if(isset($_POST["query"])) {
 			 //echo "MatchNotFound:\nThe constraint \"$constraint\" doesn't exist within the string\n";
 			 //echo "-5 points\n";
 			 $pointsGiven-=5; 
+			 if ($constraint == 'print')
+			  $_POST['AutoComments']="You forgot to include a  $constraint statement" . PHP_EOL;
+			 else if($constraint == 'while' || $constraint == 'for'){   
+			  $_POST['AutoComments']="You forgot to include a $constraint loop" . PHP_EOL;
+			 }
 		     }
 		   }
 		}       
@@ -282,15 +284,15 @@ if(isset($_POST["query"])) {
 			if ($status == 1) {    
 				//! Handle case where provide answer doesn't successfully run
 			      $pointsGiven = 0;
-			      //echo "Program couldn't compile Points Given: " . $pointsGiven . PHP_EOL;
+			      echo "Program couldn't compile Points Given: " . $pointsGiven . PHP_EOL;
 			      $_POST['AutoComments']= implode("\n", $output);
-			      //echo "AutoComments: " . $_POST['AutoComments']. PHP_EOL;
+			      echo "AutoComments: " . $_POST['AutoComments']. PHP_EOL;
 			      return;
 			}
 
 			if ($actualOutput != $expOutput) {
 				//! Handle case where the test case fails 
-				//echo "actualOutput:$actualOutput expOutput:$expOutput".PHP_EOL;
+				echo "actualOutput:$actualOutput expOutput:$expOutput".PHP_EOL;
 				$pointsGiven -= 7;
 				$_POST['AutoComments']= implode("\n", $output);
 				//echo "testCases failed" . "Current Points: " . $pointsGiven . PHP_EOL;
@@ -328,8 +330,9 @@ if(isset($_POST["query"])) {
 		   return;
      }
 
-	if ($query == 'ReleaseExam') {
-		$ch=curl_init($url);
+	if ($query == "SetFinalGrade") {
+		$url2 = "https://web.njit.edu/~ar664/cs490/backend/getexam.php";
+		$ch=curl_init($url2);
 		curl_setopt($ch, CURLOPT_POST, TRUE); // store result in var
 		curl_setopt($ch, CURLOPT_POSTFIELDS, http_build_query($_POST)); // store result in var
 		curl_setopt($ch, CURLOPT_RETURNTRANSFER, TRUE); // store result in var 
@@ -339,15 +342,23 @@ if(isset($_POST["query"])) {
 		//echo "Here is the exam stuff: " . var_dump($examArry) . PHP_EOL;	
 		curl_close($ch);
 
-		//Grades the Student's entire exam 
+		//Grades the Student's entire exam
+		// Exam is assumed to be out of 100 points
+		$finalGrade=0;
 		foreach($examArry as $json_exam=>$exam_Value){
-		  // echo "Question ID: " . $exam_Value->QuestionID . PHP_EOL;
-		 //echo "Question with ID: " . $_POST["QuestionID"] . 
-		    //" is worth $exam_Value->Points Points" . PHP_EOL; 
-		    $pointsGiven= $exam_Value->Points;
-		    $totalPoints= $exam_Value->Points;
-		    //echo "Points is now set to: " . $pointsGiven . PHP_EOL;
-		  }
+		    $pointsGiven=$exam_Value->PointsGiven;
+		    $finalGrade+=$pointsGiven;
+		    //echo "Points is now set to: " . $pointsGiven . PHP_EOL
+	        }
+                //echo "Student's finalgrade: $finalGrade" . PHP_EOL;
+	        $_POST['FinalGrade']=$finalGrade;
+		$ch2=curl_init($url);
+		curl_setopt($ch2, CURLOPT_POST, TRUE); // store result in var
+		curl_setopt($ch2, CURLOPT_POSTFIELDS, http_build_query($_POST)); // store result in var
+		curl_setopt($ch2, CURLOPT_RETURNTRANSFER, TRUE); // store result in var 
+		$releaseExam= curl_exec($ch2);
+		curl_close($ch2);
+		return;
        }
 }else{
    echo "Enter Username and Password Post Vars" . PHP_EOL; 
