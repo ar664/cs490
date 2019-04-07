@@ -1,0 +1,7 @@
+for loop:" *(for).*:$"
+while loop:" *while +:$"
+return:" *return .*"
+print:" *print(.*)$"
+list:" ?[.*]$"
+dictionary:" ?{.*:?.*, *.*}$"
+if:" *if.*:$"

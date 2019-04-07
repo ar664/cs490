@@ -1,0 +1,10 @@
+uniqueWords={}
+def answer(s, threshold):
+	words=s.split()
+	for word in words:
+		if len(s) > threshold:
+			if word in uniqueWords.keys():
+				uniqueWords[word] += 1
+			else:
+				uniqueWords[word] = 1 
+	return uniqueWords
