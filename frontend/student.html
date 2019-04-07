@@ -3,6 +3,24 @@
     <head>
         <title>Final Exam</title>
         <h1>Final Exam</h1>
+        <style type="text/css">
+            body, html {
+                height: 100%;
+                text-align: center;
+                padding-left: 5rem;
+                padding-right: 5rem;
+            }
+            table {
+                border: 0.01rem solid black;
+            }
+            th,td {
+                border: 0.01rem solid black;
+                padding: 0.1rem;
+            }
+            textarea {
+                resize: none;
+            }
+        </style>
     </head>
     <body onload="loadExam()">
         <script src="main.js"></script>
@@ -11,8 +29,8 @@
         <button onclick="submitExam()" style="visibility: hidden" id="studentSubmit">Submit Exam</button>
         <table name="questionArray" style="visibility: hidden" id="qTable">
             <thead>
-                <tr class="header">
-                    <th class="question">QUESTION</th>
+                <tr>
+                    <th>QUESTION</th>
                     <th>POINTS</th>
                     <th>POINTSGIVEN</th>
                     <th>AUTOCOMMENTS</th>
