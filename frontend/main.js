@@ -241,6 +241,7 @@ function teachExamView(mode) {
 
                         var curAns = document.createElement("P");
                         curAns.style.border = "0.1rem solid black";
+                        curAns.className = "answer";
                         var curAnsText;
                         if(exArray[eqNum].Answer) {
                             curAnsText = document.createTextNode(exArray[eqNum].Answer);
@@ -577,7 +578,6 @@ function loadExam() {
             var examArray = examResults.Exam;
             var questionArray = examResults.Questions;
             document.getElementById("fullExam").innerHTML = "EXAM 1";
-            var finalGrade = 0;
 
             //Check if the exam has been graded
             if(examArray[0].AutoComments != "") {
@@ -607,7 +607,6 @@ function loadExam() {
 
                     var rPointsGiven = document.createElement("TD");
                     var rPointsGivenContent = document.createTextNode(questionPointsGiven);
-                    finalGrade += questionPointsGiven;
                     rPointsGiven.appendChild(rPointsGivenContent);
                     row.appendChild(rPointsGiven);
 
@@ -624,10 +623,24 @@ function loadExam() {
                     questionTable.appendChild(row);
 
                 }
-                var total = document.createElement("H4");
-                var totalValue = document.createTextNode("Total: " + finalGrade);
-                total.appendChild(totalValue);
-                questionTable.appendChild(total);
+
+                // Getting the Final Calculated Grade from DB
+                var innerReq = new XMLHttpRequest();
+                innerReq.onreadystatechange = function() {
+                    console.log(this.readyState + " " + this.status);
+                    if(this.readyState == 4 && this.status == 200) {
+                        var finalGrade = this.responseText;
+                        var total = document.createElement("H4");
+                        var totalValue = document.createTextNode("Total: " + finalGrade);
+                        total.appendChild(totalValue);
+                        questionTable.appendChild(total);
+                    }
+                }
+                innerReq.open("POST","betaFrontCurl.php",true);
+                innerReq.setRequestHeader("Content-Type","application/x-www-form-urlencoded");
+                innerReq.send("query=GetFinalGrade");
+
+
             } else if(examArray.length > 0) {
                 document.getElementById("studentSubmit").style.visibility = "visible";
                 document.getElementById("subMsg").style.visibility = "visible";
@@ -662,7 +675,7 @@ function submitExam() {
 
     for(let answer of ansList) {
         var xhttp = new XMLHttpRequest();
-        var submitRequest = "query=UpdateExamQuestion&QuestionID=" + answer.id + "&Answer=" + answer.value;
+        var submitRequest = "query=UpdateExamQuestion&Answer=" + answer.value + "QuestionID=" + answer.id;
         console.log(answer.id + " " + answer.value);
         var subReq = encodeURI(submitRequest);
         xhttp.onreadystatechange = function() {
@@ -686,6 +699,17 @@ function submitExam() {
         xhttp.setRequestHeader("Content-Type","application/x-www-form-urlencoded");
         xhttp.send(subReq);
     }
+    xhttp = new XMLHttpRequest();
+    xhttp.onreadystatechange = function() {
+        console.log(this.readyState + " " + this.status);
+        if(this.readyState == 4 && this.status == 200) {
+            var db = this.responseText;
+            console.log(db);
+        }
+    }
+    xhttp.open("POST","betaFrontCurl.php",true);
+    xhttp.setRequestHeader("Content-Type","application/x-www-form-urlencoded");
+    xhttp.send("query=SetFinalGrade");
 }
 
 function editExam() {
@@ -727,8 +751,9 @@ function resetExam() {
                 console.log(resp);
                 var respObj = JSON.parse(resp);
                 if(respObj.dbSuccess) {
-                    document.getElementById("sysMsg").innerHTML = "Exam reset.";
+                    document.getElementById("sysMsg2").innerHTML = "Exam reset.";
                 }
+                teachExamView('grading');
             }
         }
         xhttp.open("POST","betaFrontCurl.php",true);
