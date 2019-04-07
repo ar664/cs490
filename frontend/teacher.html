@@ -31,10 +31,8 @@
             
         }
         .centered {
-            position: absolute;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
+            position: relative;
+            height:100%;
             text-align: center;
         }
         .centered2 {
@@ -97,9 +95,14 @@
         }
         .selected {
             background-color: yellow;
+            transition: 0.3s;
         }
         .check {
             width: 1rem;
+        }
+        .answer {
+            white-space: pre;
+            text-align: left;
         }
 
         /* Tabs! */
@@ -238,7 +241,7 @@
         </div>
 
         <!-- Grading Page-->
-        <div class="tabcontent" id="gradeExam" style="display:none">
+        <div class="tabcontent centered" id="gradeExam" style="display:none">
             <div id="examStatus">Exam not completed by student yet.</div>
             <button class="general" onclick="teachExamView('grading')">Finalize Points</button>
             <button class="general" onclick="resetExam()">Reset Exam</button>
@@ -277,7 +280,7 @@
                 </tbody>
             </table><br>
 
-            <button class="general" onclick="addToExam()" id="makeExam" style="display: none">Publish Exam</button>
+            <button class="general" onclick="addToExam()" id="makeExam" style="display: none">Add to Exam</button>
             <p id="testWork"></p>
         </div>
         <p id="version"></p>
