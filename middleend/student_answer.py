@@ -1,10 +1,12 @@
-def importantWords(s, threshold):
-    uniqueWords = {}
-    words=s.split()
-    for word in words:
-        if len(s) >= threshold:
-            if word in uniqueWords.keys():
-                uniqueWords[word]+=1
-            else:
-                uniqueWords[word]=1 
-    print(uniqueWords)
+vowels=['a', 'e', 'i', 'o', 'u']
+def vowelCount(txt):
+	count=0
+	for vowel in vowels:
+		for ch in txt:
+			if str.lower(ch) == vowel:
+				count += 1
+	return count
+
+#For Testing Purposes
+arg0="hello"
+print(answer(arg0))
