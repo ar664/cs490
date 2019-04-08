@@ -154,7 +154,7 @@ if(isset($_POST["query"])) {
 		if ($defFirstIdx === FALSE || $parensFirstIdx === FALSE) {
 			//! the answer string provided is invalid, so handle this error.
 			$pointsGiven = 0;
-			//echo "answer provided isn't a valid python function, missing def declaration.";
+			$_POST['AutoComments'].= "answer provided isn't a valid python function, missing def declaration.";
 		        //echo "Points Given: " . $pointsGiven;
 			return;
 		}
@@ -169,8 +169,9 @@ if(isset($_POST["query"])) {
 			//echo "Function name is incorrect So I'm taking away 10 points" . PHP_EOL;
 			//echo "answerFuncName:$answerFuncName   functName:$functName" . PHP_EOL;
 			$pointsGiven -= 10;
-		        echo "FunctionName should be: " . $functName . PHP_EOL;
+		        $_POST['AutoComments'].="FunctionName should be: " . $functName . PHP_EOL;
 			$answer = substr_replace($answer, $functName, $answerFuncNameStartIdx, $answerFuncNameLen);
+			//echo $answer , PHP_EOL;
 		}
 		
 		$pyBinPath=exec('which python');
@@ -200,9 +201,9 @@ if(isset($_POST["query"])) {
 			 //echo "-5 points\n";
 			 $pointsGiven-=5; 
 			 if ($constraint == 'print')
-			  $_POST['AutoComments']="You forgot to include a  $constraint statement" . PHP_EOL;
+			  $_POST['AutoComments'].="You forgot to include a  $constraint statement" . PHP_EOL;
 			 else if($constraint == 'while' || $constraint == 'for'){   
-			  $_POST['AutoComments']="You forgot to include a $constraint loop" . PHP_EOL;
+			  $_POST['AutoComments'].="You forgot to include a $constraint loop" . PHP_EOL;
 			 }
 		     }
 		   }
@@ -212,8 +213,8 @@ if(isset($_POST["query"])) {
 		//echo "This is Json: " . var_dump($jsonTestCases) . PHP_EOL;	
 		//echo "Testcases below:" . var_dump($testCases) . PHP_EOL; 
 		if ($jsonTestCases == NULL) {
-		//	echo "Testcases within if statement:" . var_dump($testCases["Input"]) . PHP_EOL; 
-		//	echo "TestCases: Invalid json. Please enter valid json for TestCases param.";
+			//echo "Testcases within if statement:" . var_dump($testCases["Input"]) . PHP_EOL; 
+	        	//echo "TestCases: Invalid json. Please enter valid json for TestCases param.";
 			return;
 		}
 
@@ -239,17 +240,17 @@ if(isset($_POST["query"])) {
 			   $expInput[$j]=$strtoInt;
 			 }
 			 if (gettype($expInput[$j]) == "string"){
-			    $data.="arg$j="."\"".$expInput[$j]."\"\n";
+			    $data.="arg$j=" . "\"" . $expInput[$j] . "\"" . "\n";
 			    $temp.="arg$j, ";
 			  }else{ 
 			  $data.="arg$j=".$expInput[$j]."\n";
-			  $temp.="arg$j, ";
+			  $temp.="arg$j, "; 
 			  }
 			  if ($j == $inputSize - 1){
 			     //echo "Temp is: $temp\n";
 			     if (strpos($answer, 'print') === FALSE){
 			     // echo "Function doesn't have a Print Statement\n";
-			      $data.="print(answer($temp))";
+			      $data.="print($functName($temp))";
 			      $endingParenth = strpos($data, ", )");
 			      $doubleRightParenth = strpos($data, "))");
 			     } else{
@@ -284,9 +285,9 @@ if(isset($_POST["query"])) {
 				//! Handle case where provide answer doesn't successfully run
 			      $pointsGiven = 0;
 			      $_POST['PointsGiven']=$pointsGiven;
-			      $_POST['AutoComments']="Program couldn't compile Points Given: " . $pointsGiven . PHP_EOL;
-			      $_POST['AutoComments']+= implode("\n", $output);
-			     // echo "AutoComments: " . $_POST['AutoComments']. PHP_EOL;
+			      $_POST['AutoComments'].="Program couldn't compile " . PHP_EOL;
+			      $_POST['AutoComments'].= implode("\n", $output);
+			      //echo "AutoComments: " . $_POST['AutoComments']. PHP_EOL;
 			      
 			      $ch2 = curl_init($url);
 			      curl_setopt($ch2, CURLOPT_POST, TRUE); // store result in var
@@ -300,10 +301,10 @@ if(isset($_POST["query"])) {
 
 			if ($actualOutput != $expOutput) {
 				//! Handle case where the test case fails 
-			//	echo "actualOutput:$actualOutput expOutput:$expOutput".PHP_EOL;
+			        //echo "actualOutput:$actualOutput expOutput:$expOutput".PHP_EOL;
 				$pointsGiven -= 7;
-				$_POST['AutoComments']= implode("\n", $output);
-				//echo "testCases failed" . "Current Points: " . $pointsGiven . PHP_EOL;
+				$_POST['AutoComments'].= implode("\n", $output);
+			        //echo "testCases failed" . " Current Points: " . $pointsGiven . PHP_EOL;
 			}
 
 		    //Restoring file to orginal form
@@ -320,7 +321,7 @@ if(isset($_POST["query"])) {
 		}
 		if ($pointsGiven == $totalPoints){
 		  //echo "Good Job you got a perfect score" . PHP_EOL;
-		  $_POST['AutoComments']='Good Job';
+		  $_POST['AutoComments'].='Good Job';
 		}
 		
 		// We are done running the test cases so now lets send the points given.
@@ -353,12 +354,14 @@ if(isset($_POST["query"])) {
 		//Grades the Student's entire exam
 		// Exam is assumed to be out of 100 points
 		$finalGrade=0;
+		$counter=1;
 		foreach($examArry as $json_exam=>$exam_Value){
 		    $pointsGiven=$exam_Value->PointsGiven;
+		    echo "You got $pointsGiven Points on Question $counter\n";
 		    $finalGrade+=$pointsGiven;
 		    //echo "Points is now set to: " . $pointsGiven . PHP_EOL
 	        }
-                //echo "Student's finalgrade: $finalGrade" . PHP_EOL;
+                echo "Student's finalgrade: $finalGrade" . PHP_EOL;
 	        $_POST['FinalGrade']=$finalGrade;
 		$ch2=curl_init($url);
 		curl_setopt($ch2, CURLOPT_POST, TRUE); // store result in var
