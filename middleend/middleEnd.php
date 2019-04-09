@@ -311,7 +311,7 @@ if(isset($_POST["query"])) {
 				echo "Taking away 25%\n";
                 $pointsOff = floor(.25*$totalPoints);
 				$pointsGiven -= $pointsOff;
-				$_POST['AutoComments'].= implode("\n", $output);
+				$_POST['AutoComments'].= "$pointsOff (25%) taken off. Test Case Failed. Given:" . $actualOutput . " Expected: " . $expOutput ;
 			        echo "testCases failed" . " Current Points: " . $pointsGiven . PHP_EOL;
 			}
 
