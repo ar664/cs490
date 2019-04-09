@@ -7,9 +7,15 @@ if( !isset($_POST["ID"]) )
     die('{"POST":"ID not set"}');
 }
 
-if( !(isset($_POST["Question"]) || isset($_POST["Difficulty"]) || isset($_POST["TestCases"]) || isset($_POST["Topic"])  || isset($_POST["Constraints"])) )
+if( !(
+    isset($_POST["Question"]) or
+    isset($_POST["Difficulty"]) or 
+    isset($_POST["TestCases"]) or
+    isset($_POST["Topic"]) or
+    isset($_POST["Constraints"]) 
+      ) )
 {
-    die('{"POST":"no variables set"}');
+    die('{"POST":"updatequestion.php no variables set"}');
 }
 
 include 'connect2.php';

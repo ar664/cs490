@@ -7,9 +7,16 @@ if(!isset($_POST["QuestionID"]))
     die('{"POST":"QuestionID not set"}');
 }
 
-if( !(isset($_POST["Points"]) || isset($_POST["Answer"])  || isset($_POST["PointsGiven"]) || isset($_POST["FinalGrade"]) || isset($_POST["AutoComments"]) || isset($_POST["TeacherComments"]) ))
+if( ! (
+    isset($_POST["Points"]) or
+    isset($_POST["Answer"])  or 
+    isset($_POST["PointsGiven"]) or 
+    isset($_POST["FinalGrade"]) or
+    isset($_POST["AutoComments"]) or 
+    isset($_POST["TeacherComments"]) 
+      ) )
 {
-    die('{"POST":"no variables set"}');
+    die('{"POST":"updateexamquestion.php no variables set"}');
 }
 
 include 'connect2.php';
