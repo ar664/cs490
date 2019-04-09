@@ -74,20 +74,20 @@ function query() {
                 rNameContainer.appendChild(textSection);  
 
                 var inSection = document.createElement("DIV");
-                var inString = "Input: " + questionTC.Input;
+                var inString = "Input: " + JSON.stringify(questionTC.Input);
                 var inText = document.createTextNode(inString);
                 inSection.appendChild(inText);
                 rNameContainer.appendChild(inSection);
 
                 var outSection = document.createElement("DIV");
-                var outString = "Output: " + questionTC.Output;
+                var outString = "Output: " + JSON.stringify(questionTC.Output);
                 var outText = document.createTextNode(outString);
                 outSection.appendChild(outText);
                 rNameContainer.appendChild(outSection);
 
                 var constraintSection = document.createElement("DIV");
                 var constraintString = "";
-                if(questionNoNo.forLoop) {
+                if(questionNoNo.for) {
                     constraintString += "For Loop";
                 }
                 if(questionNoNo.print) {
@@ -332,37 +332,45 @@ function addQuestion() {
 
     // Sending the question over
     else {
-        var question = document.getElementById("q").value;
-        var difficulty = document.getElementById("diff").value;
-        var topic = document.getElementById("top").value;
-        var fName = document.getElementById("functionName").value;
+        var question = encodeURIComponent(document.getElementById("q").value);
+        var difficulty = encodeURIComponent(document.getElementById("diff").value);
+        var topic = encodeURIComponent(document.getElementById("top").value);
+        var fName = encodeURIComponent(document.getElementById("functionName").value);
         var tcIn = [];
         var tcOut = [];
+        var inStr, outStr;
         var checks = document.getElementsByClassName("check");
 
         for(i = 1; i < numCases+1; i++) {
-            tcIn.push(document.getElementById("tc" + i).value);
-            tcOut.push(document.getElementById("ans" + i).value);    
+            inStr = document.getElementById("tc" + i).value;
+            outStr = document.getElementById("ans" + i).value;
+            tcIn.push(inStr);
+            if(parseInt(outStr)) {
+                tcOut.push(parseInt(outStr));
+            }
+            else {
+                tcOut.push(outStr);    
+            }
         }
-        tcIn.toString();
-        tcOut.toString();
         var testCases = new Object();
-        testCases.Input = "[" + tcIn + "]";
-        testCases.Output = "[" + tcOut + "]";
-        
+        testCases.Input = tcIn;
+        testCases.Output = tcOut;
+
         var constraints = new Object();
         constraints.while = checks[0].checked;
         constraints.for = checks[1].checked;
         constraints.print = checks[2].checked;
-
+        console.log(testCases);
+        
         // If any fields are empty
         if(question == null || question == "" || difficulty == null || difficulty == "" || topic == null || topic == "" || testCases == null || testCases == [] || fName == null || fName == "") {
             document.getElementById("sysMsg").innerHTML = "All Fields are Required."
         }
         else {
             var xhttp = new XMLHttpRequest();
-            var addRequest = "query=InsertQuestion&Question=" + question + "&FunctionName=" + fName + "&Difficulty=" + difficulty + "&Topic=" + topic + "&TestCases=" + JSON.stringify(testCases) + "&Constraints=" + JSON.stringify(constraints);
-            var req = encodeURI(addRequest);
+            var addRequest = "query=InsertQuestion&Question=" + question + "&FunctionName=" + fName + "&Difficulty=" + difficulty + "&Topic=" + topic + "&TestCases=" + encodeURIComponent(JSON.stringify(testCases)) + "&Constraints=" + encodeURIComponent(JSON.stringify(constraints));
+            var req = addRequest;
+            console.log(req);
             xhttp.onreadystatechange = function() {
                 if(this.readyState == 4 && this.status == 200) {
                     var echoed = this.responseText;
@@ -675,9 +683,8 @@ function submitExam() {
 
     for(let answer of ansList) {
         var xhttp = new XMLHttpRequest();
-        var submitRequest = "query=UpdateExamQuestion&Answer=" + answer.value + "QuestionID=" + answer.id;
-        console.log(answer.id + " " + answer.value);
-        var subReq = encodeURI(submitRequest);
+        var submitRequest = "query=UpdateExamQuestion&Answer=" + encodeURIComponent(answer.value) + "&QuestionID=" + answer.id;
+        console.log(submitRequest);
         xhttp.onreadystatechange = function() {
             console.log(this.readyState + " " + this.status);
             if(this.readyState == 4 && this.status == 200) {
@@ -697,19 +704,19 @@ function submitExam() {
         }
         xhttp.open("POST","betaFrontCurl.php", true);
         xhttp.setRequestHeader("Content-Type","application/x-www-form-urlencoded");
-        xhttp.send(subReq);
+        xhttp.send(submitRequest);
     }
-    xhttp = new XMLHttpRequest();
-    xhttp.onreadystatechange = function() {
+    var coconut = new XMLHttpRequest();
+    coconut.onreadystatechange = function() {
         console.log(this.readyState + " " + this.status);
         if(this.readyState == 4 && this.status == 200) {
             var db = this.responseText;
             console.log(db);
         }
     }
-    xhttp.open("POST","betaFrontCurl.php",true);
-    xhttp.setRequestHeader("Content-Type","application/x-www-form-urlencoded");
-    xhttp.send("query=SetFinalGrade");
+    coconut.open("POST","betaFrontCurl.php",true);
+    coconut.setRequestHeader("Content-Type","application/x-www-form-urlencoded");
+    coconut.send("query=SetFinalGrade");
 }
 
 function editExam() {
@@ -743,7 +750,7 @@ function resetExam() {
         var xhttp = new XMLHttpRequest();
         var req = "query=UpdateExamQuestion&QuestionID=" + gradedQ.id + "&Answer=&PointsGiven=0&AutoComments=&TeacherComments=";
         console.log(req);
-        var codedReq = encodeURI(req);
+        var codedReq = encodeURIComponent(req);
         xhttp.onreadystatechange = function() {
             console.log(this.readyState + " " + this.status);
             if(this.readyState == 4 && this.status == 200) {
