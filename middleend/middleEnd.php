@@ -81,8 +81,7 @@ if(isset($_POST["query"])) {
 		
 	
 		//Create the file from Answer
-		$answer=$_POST['Answer'];
-		 //$answer= 
+		$answer=$_POST['Answer']; 
 		//echo "This is the answer: " .PHP_EOL . $answer . PHP_EOL;
 
 
@@ -167,18 +166,19 @@ if(isset($_POST["query"])) {
 		$answerFuncName = substr($answer, $answerFuncNameStartIdx, $answerFuncNameLen);
 	
 		if ($answerFuncName != $functName) {
-			//echo "Function name is incorrect So I'm taking away 10 points" . PHP_EOL;
+			echo "Function name is incorrect So I'm taking away 10 points" . PHP_EOL;
 			echo "answerFuncName:$answerFuncName   functName:$functName" . PHP_EOL;
-			$pointsGiven -= 10;
+			$pointsGiven -= 5;
 		        $_POST['AutoComments'].="FunctionName should be: " . $functName . "\n";
 			$answer = substr_replace($answer, $functName, $answerFuncNameStartIdx, $answerFuncNameLen);
-			echo $answer . PHP_EOL;
+			//echo $answer . PHP_EOL;
 		}
 		
 		$pyBinPath=exec('which python');
 		$scriptPath=exec('pwd');
-		$filepath=$scriptPath . '/' . "student_answer.py"; 
-		file_put_contents($filepath, $answer);
+		$qID=$_POST['QuestionID'];
+		$filepath=$scriptPath . '/studentAnswers/' . "student_answer" . "$qID" . ".py"; 
+		file_put_contents($filepath, $answer, LOCK_EX);
 		
 		//Check for the Basic Constraints within the student's Answer: |for|While|print|
 		//If the value of a constraint is true | If the constraint is false
@@ -198,8 +198,7 @@ if(isset($_POST["query"])) {
 			// echo "MatchFound: \n" . substr($studentAnswer, $pos, $len) . PHP_EOL; 
 		    // } 
 		     if (empty($pos)){ 
-			 echo "MatchNotFound:\nThe constraint \"$constraint\" doesn't exist within the string\n";
-			 echo "-5 points\n";
+			 echo "MatchNotFound: -5 Points\nThe constraint \"$constraint\" doesn't exist within the string\n";
 			 $pointsGiven-=5; 
 			 if ($constraint == 'print')
 			  $_POST['AutoComments'].="You forgot to include a  $constraint statement\n";
@@ -228,7 +227,7 @@ if(isset($_POST["query"])) {
 			$expInput = explode("," ,$inputCases[$i]); //expects an array of two args
 			$inputSize = count($expInput);
 			$expOutput = $outputCases[$i];
-			$data="\n\n#For Testing Purposes\n";
+			$data="\n\n#Testing Question" . $_POST['QuestionID'] . "\n";
 			$temp="";
 		     
 		       // ForLoop checks the input Elements for strings 
@@ -274,14 +273,14 @@ if(isset($_POST["query"])) {
 		     
 			// expInput must always be an array with two arguments inside to work
 			$output=array(); 
-			file_put_contents($filepath, $data, FILE_APPEND);
-            $qid = $_POST["QuestionID"];
-			exec($pyBinPath . " " . "$scriptPath/student_answer$qid.py " . '2>&1', $output, $status);	
+			file_put_contents($filepath, $data, FILE_APPEND | LOCK_EX);
+                        $qid = $_POST["QuestionID"];
+			exec($pyBinPath . " " . "$filepath " . '2>&1', $output, $status);	
 			$actualOutput = $output[0]; 
 			
 			//echo "ExpectedOutput is " . var_dump($expOutput) . PHP_EOL;
 			//echo "Whats in Output: " . var_dump($output) . PHP_EOL;
-			//echo "Actual output is: " . $actualOutput . PHP_EOL;
+			echo "Actual output is: " . $actualOutput . PHP_EOL;
 			//echo "The current status is: " . $status . PHP_EOL;
 			if ($status == 1) {    
 				//! Handle case where provide answer doesn't successfully run
@@ -290,8 +289,8 @@ if(isset($_POST["query"])) {
 			      $_POST['PointsGiven']=$pointsGiven;
 			      $_POST['AutoComments'].="Program couldn't compile \n";
 			      $_POST['AutoComments'].= implode("\n", $output);
-			      echo "Output:\n" . print_r($output);
-			      echo "AutoComments: " . $_POST['AutoComments']. PHP_EOL;
+			      echo "Output:\n" . print_r($output) . "\n";
+			      //echo "AutoComments: " . $_POST['AutoComments']. PHP_EOL;
 			      
 			      $ch2 = curl_init($url);
 			      curl_setopt($ch2, CURLOPT_POST, TRUE); // store result in var
@@ -309,11 +308,11 @@ if(isset($_POST["query"])) {
 				echo "Taking away 7 Points\n";
 				$pointsGiven -= 7;
 				$_POST['AutoComments'].= implode("\n", $output);
-			        //echo "testCases failed" . " Current Points: " . $pointsGiven . PHP_EOL;
+			        echo "testCases failed" . " Current Points: " . $pointsGiven . PHP_EOL;
 			}
 
 		    //Restoring file to orginal form
-		    file_put_contents($filepath, $answer);
+		    file_put_contents($filepath, $answer, LOCK_EX);
 
 	       }			
 		//echo "The current amount of points outside the Grading Loop is: $pointsGiven points" . PHP_EOL;
@@ -364,7 +363,8 @@ if(isset($_POST["query"])) {
 		    $pointsGiven=$exam_Value->PointsGiven;
 		    //echo "You got $pointsGiven Points on Question $counter++\n";
 		    $finalGrade+=$pointsGiven;
-		    //echo "Points is now set to: " . $pointsGiven . PHP_EOL
+		    //echo "Points is now set to: " . $pointsGiven . PHP_EOL;
+		    //echo "FinalGrade is now set to: " . $pointsGiven . PHP_EOL;
 	        }
                 //echo "Student's finalgrade: $finalGrade" . PHP_EOL;
 	        $_POST['FinalGrade']=$finalGrade;
