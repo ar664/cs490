@@ -88,6 +88,7 @@ if(isset($_POST["query"])) {
 		//execute file and mark points
 		$comments="";
 		$pointsGiven=0;
+        $pointsOff=0;
 		$constraints="";  	
 		//Get all The questions
 		$jsonTestCases="nothing";
@@ -168,8 +169,9 @@ if(isset($_POST["query"])) {
 		if ($answerFuncName != $functName) {
 			echo "Function name is incorrect So I'm taking away 10 points" . PHP_EOL;
 			echo "answerFuncName:$answerFuncName   functName:$functName" . PHP_EOL;
-			$pointsGiven -= 5;
-		        $_POST['AutoComments'].="FunctionName should be: " . $functName . "\n";
+            $pointsOff = floor(.1*$totalPoints);
+			$pointsGiven -= $pointsOff;
+		        $_POST['AutoComments'].="$pointsOff (10%) taken off, FunctionName should be: " . $functName . "\n";
 			$answer = substr_replace($answer, $functName, $answerFuncNameStartIdx, $answerFuncNameLen);
 			//echo $answer . PHP_EOL;
 		}
@@ -199,9 +201,10 @@ if(isset($_POST["query"])) {
 		    // } 
 		     if (empty($pos)){ 
 			 echo "MatchNotFound: -5 Points\nThe constraint \"$constraint\" doesn't exist within the string\n";
-			 $pointsGiven-=5; 
+             $pointsOff = floor(.2*$totalPoints);
+			 $pointsGiven-= $pointsOff; 
 			 if ($constraint == 'print')
-			  $_POST['AutoComments'].="You forgot to include a  $constraint statement\n";
+			  $_POST['AutoComments'].="$pointsOff (20%) taken off, You forgot to include a  $constraint statement\n";
 			 else if($constraint == 'while' || $constraint == 'for'){   
 			  $_POST['AutoComments'].="You forgot to include a $constraint loop\n";
 			 }
@@ -287,7 +290,7 @@ if(isset($_POST["query"])) {
 			      $pointsGiven = 0;
 			      echo "Program Doesn't compile, Automatic 0\n";
 			      $_POST['PointsGiven']=$pointsGiven;
-			      $_POST['AutoComments'].="Program couldn't compile \n";
+			      $_POST['AutoComments']="Program couldn't compile \n";
 			      $_POST['AutoComments'].= implode("\n", $output);
 			      echo "Output:\n" . print_r($output) . "\n";
 			      //echo "AutoComments: " . $_POST['AutoComments']. PHP_EOL;
@@ -305,8 +308,9 @@ if(isset($_POST["query"])) {
 			if ($actualOutput != $expOutput) {
 				//! Handle case where the test case fails 
 			        echo "actualOutput:$actualOutput expOutput:$expOutput".PHP_EOL;
-				echo "Taking away 7 Points\n";
-				$pointsGiven -= 7;
+				echo "Taking away 25%\n";
+                $pointsOff = floor(.25*$totalPoints);
+				$pointsGiven -= $pointsOff;
 				$_POST['AutoComments'].= implode("\n", $output);
 			        echo "testCases failed" . " Current Points: " . $pointsGiven . PHP_EOL;
 			}
