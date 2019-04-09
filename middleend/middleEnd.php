@@ -275,7 +275,8 @@ if(isset($_POST["query"])) {
 			// expInput must always be an array with two arguments inside to work
 			$output=array(); 
 			file_put_contents($filepath, $data, FILE_APPEND);
-			exec($pyBinPath . " " . "$scriptPath/student_answer.py " . '2>&1', $output, $status);	
+            $qid = $_POST["QuestionID"];
+			exec($pyBinPath . " " . "$scriptPath/student_answer$qid.py " . '2>&1', $output, $status);	
 			$actualOutput = $output[0]; 
 			
 			//echo "ExpectedOutput is " . var_dump($expOutput) . PHP_EOL;
