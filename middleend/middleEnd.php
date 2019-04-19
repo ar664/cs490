@@ -307,7 +307,8 @@ if(isset($_POST["query"])) {
 			      $jsonAutoComment=json_encode($autoComments);
 			      array_push($finalAutoComment, $jsonAutoComment);
 			      $autoComments->Comments='';
-			      print_r($jsonAutoComment);
+			      echo "finalAutoComment:\n";
+			      print_r($finalAutoComment);
 			      //echo "Output:\n" . print_r($output) . "\n";
 			      //echo "AutoComments: " . $_POST['AutoComments']. PHP_EOL;
 			      
@@ -321,7 +322,7 @@ if(isset($_POST["query"])) {
 			      return;
 			}
 
-			if ($actualOutput != $expOutput) {
+			if ($actualOutput !== $expOutput) {
 				//! Handle case where the test case fails 
 			        //echo "actualOutput:$actualOutput expOutput:$expOutput".PHP_EOL;
 				//echo "Taking away 25%\n";
@@ -341,7 +342,8 @@ if(isset($_POST["query"])) {
 			        $autoComments->Comments= 'Good Job';
 			        $autoComments->Output= $actualOutput;
 				$jsonAutoComment=json_encode($autoComments);
-				array_push($finalAutoComment, $jsonAutoComment);}
+				array_push($finalAutoComment, $jsonAutoComment);
+				$autoComments->Comments="";}
 
 		    //Restoring file to orginal form
 		    file_put_contents($filepath, $answer, LOCK_EX);
