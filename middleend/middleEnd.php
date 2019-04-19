@@ -79,16 +79,19 @@ if(isset($_POST["query"])) {
 	           return;
              }
 		
-	
+	        
 		//Create the file from Answer
 		$answer=$_POST['Answer']; 
+		echo "Answer Contents:\n";
+		echo $answer . PHP_EOL;
 		//echo "This is the answer: " .PHP_EOL . $answer . PHP_EOL;
 
 
 		//execute file and mark points
-		$comments="";
+		$autoComments=(object)['TestCaseID'=>1, 'TestCase'=>'', 'Expected' =>'', 'Output'=>'',  'functComments'=>'', 'Comments'=>''];
+		$finalAutoComment=array();
 		$pointsGiven=0;
-        $pointsOff=0;
+                $pointsOff=0;
 		$constraints="";  	
 		//Get all The questions
 		$jsonTestCases="nothing";
@@ -156,7 +159,8 @@ if(isset($_POST["query"])) {
 			//! the answer string provided is invalid, so handle this error.
 			$pointsGiven = 0;
 			$_POST['AutoComments'].= "answer provided isn't a valid python function, missing def declaration.\n";
-		        echo "function provided isn't a valid Python function missing def declaration Points Given: " . $pointsGiven;
+			$autoComments->functComments.="answer provided isn't a valid python function, missing def declaration.\n";
+		        //echo "function provided isn't a valid Python function missing def declaration Points Given: " . $pointsGiven;
 			return;
 		}
 
@@ -167,11 +171,12 @@ if(isset($_POST["query"])) {
 		$answerFuncName = substr($answer, $answerFuncNameStartIdx, $answerFuncNameLen);
 	
 		if ($answerFuncName != $functName) {
-			echo "Function name is incorrect So I'm taking away 10 points" . PHP_EOL;
-			echo "answerFuncName:$answerFuncName   functName:$functName" . PHP_EOL;
-            $pointsOff = floor(.1*$totalPoints);
+			//echo "Function name is incorrect So I'm taking away 10 points" . PHP_EOL;
+			//echo "answerFuncName:$answerFuncName   functName:$functName" . PHP_EOL;
+                        $pointsOff = floor(.1*$totalPoints);
 			$pointsGiven -= $pointsOff;
 		        $_POST['AutoComments'].="$pointsOff (10%) taken off, FunctionName should be: " . $functName . "\n";
+			$autoComments->functComments.="$pointsOff (10%) taken off, FunctionName should be: " . $functName . "\n";
 			$answer = substr_replace($answer, $functName, $answerFuncNameStartIdx, $answerFuncNameLen);
 			//echo $answer . PHP_EOL;
 		}
@@ -200,13 +205,15 @@ if(isset($_POST["query"])) {
 			// echo "MatchFound: \n" . substr($studentAnswer, $pos, $len) . PHP_EOL; 
 		    // } 
 		     if (empty($pos)){ 
-			 echo "MatchNotFound: -5 Points\nThe constraint \"$constraint\" doesn't exist within the string\n";
-             $pointsOff = floor(.2*$totalPoints);
-			 $pointsGiven-= $pointsOff; 
-			 if ($constraint == 'print')
+			 //echo "MatchNotFound: -5 Points\nThe constraint \"$constraint\" doesn't exist within the string\n";
+                         $pointsOff = floor(.2*$totalPoints);
+			 $pointsGiven -= $pointsOff; 
+			 if ($constraint == 'print'){
 			  $_POST['AutoComments'].="$pointsOff (20%) taken off, You forgot to include a  $constraint statement\n";
-			 else if($constraint == 'while' || $constraint == 'for'){   
+			  $autoComments->functComments.="$pointsOff (20%) taken off, You forgot to include a  $constraint statement\n";
+			 }else if($constraint == 'while' || $constraint == 'for'){   
 			  $_POST['AutoComments'].="You forgot to include a $constraint loop\n";
+			  $autoComments->functComments.="You forgot to include a $constraint loop\n";
 			 }
 		     }
 		   }
@@ -268,7 +275,7 @@ if(isset($_POST["query"])) {
 			   $data = substr_replace($data, '', $endingParenth, $diffPos);
 			  }
 		      }
-		       echo "Data after replace contains: $data" . PHP_EOL;
+		       //echo "Data after replace contains: $data" . PHP_EOL;
 		       //echo "TestCase is: " . var_dump($expInput) . PHP_EOL;
 		       //echo "expInput is: " . var_dump($expInput) . PHP_EOL;
 		       //echo "expOutput is: " . var_dump($expOutput) . PHP_EOL;
@@ -279,20 +286,29 @@ if(isset($_POST["query"])) {
 			file_put_contents($filepath, $data, FILE_APPEND | LOCK_EX);
                         $qid = $_POST["QuestionID"];
 			exec($pyBinPath . " " . "$filepath " . '2>&1', $output, $status);	
-			$actualOutput = $output[0]; 
+			$actualOutput = $output[0];
+                        $autoComments->TestCaseID=$i+1;
 			
 			//echo "ExpectedOutput is " . var_dump($expOutput) . PHP_EOL;
 			//echo "Whats in Output: " . var_dump($output) . PHP_EOL;
-			echo "Actual output is: " . $actualOutput . PHP_EOL;
+			//echo "Actual output is: " . $actualOutput . PHP_EOL;
 			//echo "The current status is: " . $status . PHP_EOL;
 			if ($status == 1) {    
 				//! Handle case where provide answer doesn't successfully run
 			      $pointsGiven = 0;
-			      echo "Program Doesn't compile, Automatic 0\n";
+			      //echo "Program Doesn't compile, Automatic 0\n";
 			      $_POST['PointsGiven']=$pointsGiven;
-			      $_POST['AutoComments']="Program couldn't compile \n";
+			      $_POST['AutoComments'].="Program couldn't compile \n";
 			      $_POST['AutoComments'].= implode("\n", $output);
-			      echo "Output:\n" . print_r($output) . "\n";
+			      $autoComments->TestCase=$inputCases[$i];
+			      $autoComments->Expected=$expOutput;
+			      $autoComments->Comments.=implode("\n", $output);
+			      $autoComments->Comments.="Program couldn't compile \n";
+			      $jsonAutoComment=json_encode($autoComments);
+			      array_push($finalAutoComment, $jsonAutoComment);
+			      $autoComments->Comments='';
+			      print_r($jsonAutoComment);
+			      //echo "Output:\n" . print_r($output) . "\n";
 			      //echo "AutoComments: " . $_POST['AutoComments']. PHP_EOL;
 			      
 			      $ch2 = curl_init($url);
@@ -307,13 +323,25 @@ if(isset($_POST["query"])) {
 
 			if ($actualOutput != $expOutput) {
 				//! Handle case where the test case fails 
-			        echo "actualOutput:$actualOutput expOutput:$expOutput".PHP_EOL;
-				echo "Taking away 25%\n";
-                $pointsOff = floor(.25*$totalPoints);
+			        //echo "actualOutput:$actualOutput expOutput:$expOutput".PHP_EOL;
+				//echo "Taking away 25%\n";
+                                $pointsOff = floor(.25*$totalPoints);
 				$pointsGiven -= $pointsOff;
-				$_POST['AutoComments'].= "$pointsOff (25%) taken off. Test Case Failed. Given:" . $actualOutput . " Expected: " . $expOutput ;
-			        echo "testCases failed" . " Current Points: " . $pointsGiven . PHP_EOL;
-			}
+				$_POST['AutoComments'].= "$pointsOff (25%) taken off. Test Case Failed. Given:" . $actualOutput . " Expected: " . $expOutput. "\n"; 
+			        $autoComments->TestCase=$inputCases[$i];
+				$autoComments->Expected=$expOutput;
+			        $autoComments->Comments.="$pointsOff (25%) taken off. Test Case Failed. Given:" . $actualOutput . " Expected: " . $expOutput. "\n";
+				$autoComments->Output=$actualOutput;
+				$jsonAutoComment=json_encode($autoComments);
+				array_push($finalAutoComment, $jsonAutoComment);
+				$autoComments->Comments="";
+			        //echo "testCases failed" . " Current Points: " . $pointsGiven . PHP_EOL;
+			}else{  $autoComments->TestCase= $inputCases[$i];
+			        $autoComments->Expected= $expOutput;
+			        $autoComments->Comments= 'Good Job';
+			        $autoComments->Output= $actualOutput;
+				$jsonAutoComment=json_encode($autoComments);
+				array_push($finalAutoComment, $jsonAutoComment);}
 
 		    //Restoring file to orginal form
 		    file_put_contents($filepath, $answer, LOCK_EX);
@@ -322,18 +350,21 @@ if(isset($_POST["query"])) {
 		//echo "The current amount of points outside the Grading Loop is: $pointsGiven points" . PHP_EOL;
 		//echo "Points is a \n";
 		//var_dump($_POST['Points']);
-	
-		//Grading is done output result
-		if ($pointsGiven < 0) {
-			$pointsGiven = 0;
-		}
+		echo "this is the AutoComment\n";
+                print_r($finalAutoComment);
+		echo PHP_EOL;
 		if ($pointsGiven == $totalPoints){
 		  //echo "Good Job you got a perfect score" . PHP_EOL;
 		  $_POST['AutoComments'].='Good Job';
 		}
+		//Grading is done output result
+		if ($pointsGiven < 0) {
+			$pointsGiven = 0;
+		}
 		
 		// We are done running the test cases so now lets send the points given.
 		   $_POST['PointsGiven']=$pointsGiven;
+
 		   //echo "student received " . $pointsGiven . " points" . PHP_EOL;
 		   //echo "The AutoComments are: \n";
 		   //var_dump($_POST['AutoComments']);
@@ -344,6 +375,7 @@ if(isset($_POST["query"])) {
 		   $updatedQuestion = curl_exec($ch2);
 		   echo $updatedQuestion;
 		   curl_close($ch2);
+		   $_POST['AutoComments']='';
 		   return;
      }
 
@@ -367,8 +399,8 @@ if(isset($_POST["query"])) {
 		    $pointsGiven=$exam_Value->PointsGiven;
 		    //echo "You got $pointsGiven Points on Question $counter++\n";
 		    $finalGrade+=$pointsGiven;
-		    //echo "Points is now set to: " . $pointsGiven . PHP_EOL;
-		    //echo "FinalGrade is now set to: " . $pointsGiven . PHP_EOL;
+		     //echo "Points is now set to: " . $pointsGiven . PHP_EOL;
+		     //echo "FinalGrade is now set to: " . $pointsGiven . PHP_EOL;
 	        }
                 //echo "Student's finalgrade: $finalGrade" . PHP_EOL;
 	        $_POST['FinalGrade']=$finalGrade;
