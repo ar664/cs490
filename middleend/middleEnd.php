@@ -82,13 +82,15 @@ if(isset($_POST["query"])) {
 	        
 		//Create the file from Answer
 		$answer=$_POST['Answer']; 
-		echo "Answer Contents:\n";
-		echo $answer . PHP_EOL;
+		 echo "Answer Contents:\n";
+		 echo $answer . PHP_EOL;
 		//echo "This is the answer: " .PHP_EOL . $answer . PHP_EOL;
 
 
 		//execute file and mark points
-		$autoComments=(object)['TestCaseID'=>1, 'TestCase'=>'', 'Expected' =>'', 'Output'=>'',  'functComments'=>'', 'Comments'=>''];
+		$studentFunct=(object)['SyntaxErrors'=>''];
+		$syntxErrs=array();
+		$autoComments=(object)['TestCaseID'=>1, 'TestCase'=>'', 'Expected' =>'', 'Output'=>'', 'Comments'=>''];
 		$finalAutoComment=array();
 		$pointsGiven=0;
                 $pointsOff=0;
@@ -154,16 +156,25 @@ if(isset($_POST["query"])) {
 		//give them a zero because function will not compile 
 		$defFirstIdx = stripos($answer, "def ");
 		$parensFirstIdx = stripos($answer, "(");
+		$colonFirstIdx = stripos($answer, ") :");
+		$colonFirstIdx2 = stripos($answer, "):");
 		// echo $defFirstIdx, " ", $parensFirstIdx;
+		
 		if ($defFirstIdx === FALSE || $parensFirstIdx === FALSE) {
 			//! the answer string provided is invalid, so handle this error.
 			$pointsGiven = 0;
 			$_POST['AutoComments'].= "answer provided isn't a valid python function, missing def declaration.\n";
-			$autoComments->functComments.="answer provided isn't a valid python function, missing def declaration.\n";
-		        //echo "function provided isn't a valid Python function missing def declaration Points Given: " . $pointsGiven;
-			return;
+			array_push($syntxErrs, "answer provided isn't a valid python function, missing def declaration.\n");
+		        //echo "function provided isn't a valid Python function missing def declaration Points Given: " . $pointsGiven
 		}
 
+		if ($colonFirstIdx === FALSE && $colonFirstIdx2 === FALSE) {
+			//! the answer string provided is invalid, so handle this error.
+			$pointsGiven = 0;
+			$_POST['AutoComments'].="answer provided isn't a valid python function, missing ':' after def declaration.\n";
+			array_push($syntxErrs, "answer provided isn't a valid python function, missing ':' after def declaration.\n");
+		        //echo "function provided isn't a valid Python function missing def declaration Points Given: " . $pointsGiven
+		}
 		// replace the functionName in studentFunction 
 		//if its not FunctName
 		$answerFuncNameStartIdx = $defFirstIdx + 4;
@@ -175,8 +186,8 @@ if(isset($_POST["query"])) {
 			//echo "answerFuncName:$answerFuncName   functName:$functName" . PHP_EOL;
                         $pointsOff = floor(.1*$totalPoints);
 			$pointsGiven -= $pointsOff;
-		        $_POST['AutoComments'].="$pointsOff (10%) taken off, FunctionName should be: " . $functName . "\n";
-			$autoComments->functComments.="$pointsOff (10%) taken off, FunctionName should be: " . $functName . "\n";
+		        $_POST['AutoComments'].="Deduct $pointsOff points or 10%, FunctionName should be: " . $functName . "\n";
+			array_push($syntxErrs, "Deduct $pointsOff points or 10%, FunctionName should be: "  . $functName . "\n");
 			$answer = substr_replace($answer, $functName, $answerFuncNameStartIdx, $answerFuncNameLen);
 			//echo $answer . PHP_EOL;
 		}
@@ -209,17 +220,19 @@ if(isset($_POST["query"])) {
                          $pointsOff = floor(.2*$totalPoints);
 			 $pointsGiven -= $pointsOff; 
 			 if ($constraint == 'print'){
-			  $_POST['AutoComments'].="$pointsOff (20%) taken off, You forgot to include a  $constraint statement\n";
-			  $autoComments->functComments.="$pointsOff (20%) taken off, You forgot to include a  $constraint statement\n";
+			  $_POST['AutoComments'].="Deduct $pointsOff points or 20%, You forgot to include a $constraint statement\n";
+			  array_push($syntxErrs, "Deduct $pointsOff points or 20%, You forgot to include a $constraint statement\n");
 			 }else if($constraint == 'while' || $constraint == 'for'){   
-			  $_POST['AutoComments'].="You forgot to include a $constraint loop\n";
-			  $autoComments->functComments.="You forgot to include a $constraint loop\n";
+			  $_POST['AutoComments'].="Deduct $pointsOff points or 20%, You forgot to include a $constraint loop\n";
+			  array_push($syntxErrs, "Deduct $pointsOff points or 20%, You forgot to include a $constraint loop\n");
 			 }
 		     }
 		   }
 		}       
 	      
-
+                $studentFunct->SyntaxErrors=$syntxErrs; 
+		$json_FunctCmnts=json_encode($studentFunct);
+		array_push($finalAutoComment, $json_FunctCmnts);
 		//echo "This is Json: " . var_dump($jsonTestCases) . PHP_EOL;	
 		//echo "Testcases below:" . var_dump($testCases) . PHP_EOL; 
 		if ($jsonTestCases == NULL) {
@@ -322,16 +335,16 @@ if(isset($_POST["query"])) {
 			      return;
 			}
 
-			if ($actualOutput !== $expOutput) {
+			if ($actualOutput != $expOutput) {
 				//! Handle case where the test case fails 
 			        //echo "actualOutput:$actualOutput expOutput:$expOutput".PHP_EOL;
 				//echo "Taking away 25%\n";
                                 $pointsOff = floor(.25*$totalPoints);
 				$pointsGiven -= $pointsOff;
-				$_POST['AutoComments'].= "$pointsOff (25%) taken off. Test Case Failed. Given:" . $actualOutput . " Expected: " . $expOutput. "\n"; 
+				$_POST['AutoComments'].= "Deduct $pointsOff or (25%). Given:" . $actualOutput . " Expected: " . $expOutput. "\n"; 
 			        $autoComments->TestCase=$inputCases[$i];
 				$autoComments->Expected=$expOutput;
-			        $autoComments->Comments.="$pointsOff (25%) taken off. Test Case Failed. Given:" . $actualOutput . " Expected: " . $expOutput. "\n";
+			        $autoComments->Comments.="Deduct $pointsOff or (25%). Given:" . $actualOutput . " Expected: " . $expOutput. "\n";
 				$autoComments->Output=$actualOutput;
 				$jsonAutoComment=json_encode($autoComments);
 				array_push($finalAutoComment, $jsonAutoComment);
