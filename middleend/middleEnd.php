@@ -82,8 +82,8 @@ if(isset($_POST["query"])) {
 	        
 		//Create the file from Answer
 		$answer=$_POST['Answer']; 
-		 echo "Answer Contents:\n";
-		 echo $answer . PHP_EOL;
+		 //echo "Answer Contents:\n";
+		 //echo $answer . PHP_EOL;
 		//echo "This is the answer: " .PHP_EOL . $answer . PHP_EOL;
 
 
@@ -233,7 +233,8 @@ if(isset($_POST["query"])) {
 	      
                 $studentFunct->SyntaxErrors=$syntxErrs; 
 		$json_FunctCmnts=json_encode($studentFunct);
-		array_push($finalAutoComment, $json_FunctCmnts);
+		array_push($finalAutoComment, $studentFunct);
+		//array_push($finalAutoComment, $json_FunctCmnts);
 		//echo "This is Json: " . var_dump($jsonTestCases) . PHP_EOL;	
 		//echo "Testcases below:" . var_dump($testCases) . PHP_EOL; 
 		if ($jsonTestCases == NULL) {
@@ -312,8 +313,8 @@ if(isset($_POST["query"])) {
 			      $pointsGiven = 0;
 			      //echo "Program Doesn't compile, Automatic 0\n";
 			      $_POST['PointsGiven']=$pointsGiven;
-			      $_POST['AutoComments'].="Program couldn't compile \n";
-			      $_POST['AutoComments'].= implode("\n", $output);
+			      //$_POST['AutoComments'].="Program couldn't compile \n";
+			      //$_POST['AutoComments'].= implode("\n", $output);
 			      $autoComments->TestCase=$inputCases[$i];
 			      $autoComments->Expected=$expOutput;
 			      //$autoComments->Comments.=implode("\n", $output);
@@ -321,13 +322,14 @@ if(isset($_POST["query"])) {
 			      array_push($comments_Arry, "Program couldn't compile\n");
 			      $txtDat=implode("\n", $output);
 			      array_push($comments_Arry, $txtDat);
-			       $autoComments->Comments=$comments_Arry;
+			      $autoComments->Comments=$comments_Arry;
 			      $jsonAutoComment=json_encode($autoComments);
 			      array_push($finalAutoComment, $jsonAutoComment);
 			      $comments_Arry=array();
+			      $_POST['AutoComments']=$finalAutoComment;
 			      //$autoComments->Comments='';
-			      echo "finalAutoComment:\n";
-			      print_r($finalAutoComment);
+			      //echo "finalAutoComment:\n";
+			      //print_r($finalAutoComment);
 			      //echo "Output:\n" . print_r($output) . "\n";
 			      //echo "AutoComments: " . $_POST['AutoComments']. PHP_EOL;
 			      
@@ -340,6 +342,40 @@ if(isset($_POST["query"])) {
 			      curl_close($ch2);
 			      return;
 			}
+                        
+			//Change the student's OutputType 
+			//to match the Expected Output
+                        $expType=gettype($expOutput);
+			switch ($expType){
+			case "string":
+			 break;
+			case "boolean":
+			 $actualOutput=(bool)$actualOutput;
+			 break;
+			case "integer":
+			 $actualOutput=(int)$actualOutput;
+			 break;
+			case "array":
+			 $actualOutput=(array)$actualOutput;
+			 break;
+			case "object":
+			 $actualOutput=(object)$actualOutput;
+			 break;
+			case "double":
+			 $actualOutput=(double)$actualOutput;
+			 break;
+			default:
+			 "Not an appropiate datatype \"$expType\"";
+			 break;
+			}
+		
+		        echo "acutalOutput:\n";
+			var_dump($acutalOutput);
+			echo PHP_EOL;
+			
+			echo "expectedOutput:\n";
+			var_dump($expOutput);
+			echo PHP_EOL;
 
 			if ($actualOutput !== $expOutput) {
 				//! Handle case where the test case fails 
@@ -347,16 +383,17 @@ if(isset($_POST["query"])) {
 				//echo "Taking away 25%\n";
                                 $pointsOff = floor(.25*$totalPoints);
 				$pointsGiven -= $pointsOff;
-				$_POST['AutoComments'].= "Deduct $pointsOff or (25%). Given:" . $actualOutput . " Expected:" . $expOutput. "\n"; 
-			        $autoComments->TestCase=$inputCases[$i];
+				//$_POST['AutoComments'].= "Deduct $pointsOff or (25%). Given:" . $actualOutput . " Expected:" . $expOutput. "\n";
+				$autoComments->TestCase=$inputCases[$i];
 				$autoComments->Expected=$expOutput;
 			        array_push($comments_Arry, "Deduct $pointsOff or (25%). Given:" . $actualOutput . " Expected:" . $expOutput. "\n"); 
 				$autoComments->Comments=$comments_Arry;
 				//$autoComments->Comments.="Deduct $pointsOff or (25%). Given:" . $actualOutput . " Expected: " . $expOutput. "\n";
 				$autoComments->Output=$actualOutput;
-				$jsonAutoComment=json_encode($autoComments);
-				array_push($finalAutoComment, $jsonAutoComment);
+				//$jsonAutoComment=json_encode($autoComments);
+				array_push($finalAutoComment, $autoComments);
 				$comments_Arry=array();
+				unset($autoComments);
 				//$autoComments->Comments="";
 			        //echo "testCases failed" . " Current Points: " . $pointsGiven . PHP_EOL;
 			}else{  $autoComments->TestCase= $inputCases[$i];
@@ -364,9 +401,10 @@ if(isset($_POST["query"])) {
 			        array_push($comments_Arry, 'Good Job');
 			        $autoComments->Output = $actualOutput;
 				$autoComments->Comments=$comments_Arry;
-				$jsonAutoComment=json_encode($autoComments);
-				array_push($finalAutoComment, $jsonAutoComment);
+				//$jsonAutoComment=json_encode($autoComments);
+				array_push($finalAutoComment, $autoComments);
 				$comments_Arry=array();
+				unset($autoComments);
 				//$autoComments->Comments="";
 				}
 
@@ -380,21 +418,26 @@ if(isset($_POST["query"])) {
 		echo "this is the AutoComment\n";
                 print_r($finalAutoComment);
 		echo PHP_EOL;
-		if ($pointsGiven == $totalPoints){
+
+		//if ($pointsGiven == $totalPoints){
 		  //echo "Good Job you got a perfect score" . PHP_EOL;
-		  $_POST['AutoComments'].='Good Job';
-		}
+		//  $_POST['AutoComments'].='Good Job';
+		//}
 		//Grading is done output result
-		if ($pointsGiven < 0) {
+		 echo "This is the PointsGiven: " . $pointsGiven . "\n";
+		 if ($pointsGiven < 0) {
 			$pointsGiven = 0;
 		}
 		
 		// We are done running the test cases so now lets send the points given.
 		   $_POST['PointsGiven']=$pointsGiven;
-
-		   //echo "student received " . $pointsGiven . " points" . PHP_EOL;
-		   //echo "The AutoComments are: \n";
-		   //var_dump($_POST['AutoComments']);
+		   $json_AutoComments=json_encode($finalAutoComment);
+		   $json_AutoComments=preg_replace('/\\\"/', '\"', $json_AutoComments);
+		   //echo $json_AutoComments . PHP_EOL;
+		   var_export($json_AutoComments, true);
+		   $_POST['AutoComments']=$json_AutoComments;
+		   
+		   
 		   $ch2 = curl_init($url);
 		   curl_setopt($ch2, CURLOPT_POST, TRUE); // store result in var
 		   curl_setopt($ch2, CURLOPT_POSTFIELDS, http_build_query($_POST, null, '&', PHP_QUERY_RFC3986)); // store result in var
