@@ -144,7 +144,7 @@ if(isset($_POST["query"])) {
 		$finalAutoComment=array();
 		$syntxErrs=array();
 		$comments_Arry=array();
-		$studentFunct=(object)['SyntaxErrors'=>''];
+		$studentFunct=(object)['SyntaxError'=>''];
 		$autoComments=(object)['TestCaseID'=>1, 'TestCase'=>'', 'Expected' =>'', 'Output'=>'', 'Comments'=>''];
 		
 		//if "def" or ( not in the student's Function 
@@ -168,7 +168,7 @@ if(isset($_POST["query"])) {
 		if ($colonFirstIdx === FALSE || $colonFirstIdx2 === FALSE) {
 			//! the answer string provided is invalid, so handle this error.;
 			echo "you forgot the colon after the def statement\n";
-                        $pointsOff = floor(.2*$totalPoints);
+                        $pointsOff = floor(.05*$totalPoints);
 			$pointsGiven -= $pointsOff;
 		        $colonPIdx2 = strpos($answer, ")");
 		        $colonPIdx =  strpos($answer, ") "); 
@@ -237,9 +237,17 @@ if(isset($_POST["query"])) {
 		     }
 		   }
 		}       
-	      
-                $studentFunct->SyntaxErrors=$syntxErrs; 
-		array_push($finalAutoComment, $studentFunct);
+
+	
+		foreach($syntxErrs as &$err){
+		   $tempVar=$err;
+		   $studentFunct->SyntaxError=$tempVar;
+		   echo "This is the Error: $err\n";
+		   echo "Here's SyntaxError now: $studentFunct->SyntaxError\n";
+	           var_dump($studentFunct) . PHP_EOL;
+	 	   array_push($finalAutoComment, $studentFunct); 
+		}
+		
 		//echo "This is Json: " . var_dump($jsonTestCases) . PHP_EOL;	
 		//echo "Testcases below:" . var_dump($testCases) . PHP_EOL; 
 		if ($jsonTestCases == NULL) {
