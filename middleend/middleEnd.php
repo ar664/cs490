@@ -145,7 +145,7 @@ if(isset($_POST["query"])) {
 		$syntxErrs=array();
 		$comments_Arry=array();
 		$studentFunct=(object)['SyntaxError'=>''];
-		$autoComments=(object)['TestCaseID'=>1, 'TestCase'=>'', 'PointsSubtracted'=>0, 'Expected' =>'', 'Output'=>'', 'Comments'=>''];
+		$autoComments=(object)['TestCaseID'=>1, 'TestCase'=>'', 'Points'=>0, 'Expected' =>'', 'Output'=>'', 'Comments'=>''];
 		
 		//if "def" or ( not in the student's Function 
 		//give them a zero because function will not compile 
@@ -336,7 +336,6 @@ if(isset($_POST["query"])) {
 			      array_push($finalAutoComment, $jsonAutoComment);
 			      $comments_Arry=array();
 			      $_POST['AutoComments']=$finalAutoComment;
-			      //echo "finalAutoComment:\n";
 			      //print_r($finalAutoComment);
 			      //echo "Output:\n" . print_r($output) . "\n";
 			      //echo "AutoComments: " . $_POST['AutoComments']. PHP_EOL;
@@ -384,7 +383,7 @@ if(isset($_POST["query"])) {
                                 //echo "Output doesn't match the expected one\n";
 				$pointsOff = floor($pointsTaken);
 				$pointsGiven -= $pointsOff;
-				$autoComments->TakeAway=$pointsoff;
+				$autoComments->Points=$pointsGiven;
 				$autoComments->TestCase=$inputCases[$i];
 				$autoComments->Expected=$expOutput;
 			        array_push($comments_Arry, "Deduct $pointsOff or (25%). Given:" . $actualOutput . " Expected:" . $expOutput. "\n");                                                    $autoComments->Comments=$comments_Arry;
@@ -395,7 +394,7 @@ if(isset($_POST["query"])) {
 			}else{  
 			        //echo "Good job the output matches what's expected\n";
 				$autoComments->TestCase= $inputCases[$i];
-				$autoComments->PointsSubtracted=0;
+				$autoComments->Points=$pointsGiven;
 			        $autoComments->Expected= $expOutput;
 			        array_push($comments_Arry, 'Good Job');
 			        $autoComments->Output = $actualOutput;
