@@ -145,7 +145,7 @@ if(isset($_POST["query"])) {
 		$syntxErrs=array();
 		$comments_Arry=array();
 		$studentFunct=(object)['SyntaxError'=>''];
-		$autoComments=(object)['TestCaseID'=>1, 'TestCase'=>'', 'Expected' =>'', 'Output'=>'', 'Comments'=>''];
+		$autoComments=(object)['TestCaseID'=>1, 'TestCase'=>'', 'PointsSubtracted'=>0, 'Expected' =>'', 'Output'=>'', 'Comments'=>''];
 		
 		//if "def" or ( not in the student's Function 
 		//give them a zero because function will not compile 
@@ -162,7 +162,7 @@ if(isset($_POST["query"])) {
 			echo "you forgot the def statement\n";
 			$pointsGiven = 0;
 			array_push($syntxErrs, "answer provided isn't a valid python function, missing def declaration.\n");
-		        //echo "function provided isn't a valid Python function missing def declaration Points Given: " . $pointsGiven
+			//echo "function provided isn't a valid Python function missing def declaration Points Given: " . $pointsGiven
 		}
 
 		if ($colonFirstIdx === FALSE || $colonFirstIdx2 === FALSE) {
@@ -195,7 +195,7 @@ if(isset($_POST["query"])) {
 		if ($answerFuncName !== $functName) {
 			//echo "Function name is incorrect So I'm taking away 10 points" . PHP_EOL;
 			//echo "answerFuncName:$answerFuncName   functName:$functName" . PHP_EOL;
-                        $pointsOff = floor(.1*$totalPoints);
+                        $pointsOff = floor(.05*$totalPoints);
 			$pointsGiven -= $pointsOff;
 			array_push($syntxErrs, "Deduct $pointsOff points or 10%, FunctionName should be: "  . $functName . "\n");
 			$answer = substr_replace($answer, $functName, $answerFuncNameStartIdx, $answerFuncNameLen);
@@ -227,7 +227,7 @@ if(isset($_POST["query"])) {
 		    // } 
 		     if (empty($pos)){ 
 			 //echo "MatchNotFound: -5 Points\nThe constraint \"$constraint\" doesn't exist within the string\n";
-                         $pointsOff = floor(.2*$totalPoints);
+                         $pointsOff = floor(.05*$totalPoints);
 			 $pointsGiven -= $pointsOff; 
 			 if ($constraint == 'print'){
 			  array_push($syntxErrs, "Deduct $pointsOff points or 20%, You forgot to include a $constraint statement\n");
@@ -240,8 +240,9 @@ if(isset($_POST["query"])) {
 
 	
 		foreach($syntxErrs as &$err) { 
-		   $studentFunct=(object)['SyntaxError'=>''];
+		   $studentFunct=(object)['SyntaxError'=>'', 'PointsTken'=>0];
 		   $studentFunct->SyntaxError=$err;
+		   $studentFunct->PointsTken=floor( .05 * $totalPoints);
 		   //echo "This is the Error: $err\n";
 		   echo "Here's SyntaxError now: $studentFunct->SyntaxError\n";
 	           //var_dump($studentFunct) . PHP_EOL;
@@ -260,9 +261,10 @@ if(isset($_POST["query"])) {
 		//Forloop for testCases to be split one by one and executed
 		$inputCases=$jsonTestCases->Input;
 		$length=count($inputCases);
+		$pointsTaken=$totalPoints/$length;
 		$outputCases=$jsonTestCases->Output;
 		for($i=0; $i < $length; $i++ ) {
-			$expInput = explode("," ,$inputCases[$i]); //expects an array of two args
+			$expInput = explode("," ,$inputCases[$i]); //expects an array of args
 			$inputSize = count($expInput);
 			$expOutput = $outputCases[$i];
 			$data="\n\n#Testing Question" . $_POST['QuestionID'] . "\n";
@@ -308,7 +310,7 @@ if(isset($_POST["query"])) {
 		       //echo "expInput is: " . var_dump($expInput) . PHP_EOL;
 		       //echo "expOutput is: " . var_dump($expOutput) . PHP_EOL;		
 		     
-			// expInput must always be an array with two arguments inside to work
+			// expInput must always be an array with specificed args inside to work
 			$output=array(); 
 			file_put_contents($filepath, $data, FILE_APPEND | LOCK_EX);
                         $qid = $_POST["QuestionID"];
@@ -372,7 +374,7 @@ if(isset($_POST["query"])) {
 			 break;
 			default:
 			 echo "Not an appropiate datatype \"$expType\"";
-			 break;
+			 return;
 			}
 
 			if ($actualOutput !== $expOutput) {
@@ -380,11 +382,12 @@ if(isset($_POST["query"])) {
 			        //echo "actualOutput:$actualOutput expOutput:$expOutput".PHP_EOL;
 				//echo "Taking away 25%\n";
                                 //echo "Output doesn't match the expected one\n";
-				$pointsOff = floor(.25*$totalPoints);
+				$pointsOff = floor($pointsTaken);
 				$pointsGiven -= $pointsOff;
+				$autoComments->TakeAway=$pointsoff;
 				$autoComments->TestCase=$inputCases[$i];
 				$autoComments->Expected=$expOutput;
-			        array_push($comments_Arry, "Deduct $pointsOff or (25%). Given:" . $actualOutput . " Expected:" . $expOutput. "\n");                                                $autoComments->Comments=$comments_Arry;				
+			        array_push($comments_Arry, "Deduct $pointsOff or (25%). Given:" . $actualOutput . " Expected:" . $expOutput. "\n");                                                    $autoComments->Comments=$comments_Arry;
 				$autoComments->Output=$actualOutput;
 				array_push($finalAutoComment, $autoComments);
 				$comments_Arry=array();
@@ -392,6 +395,7 @@ if(isset($_POST["query"])) {
 			}else{  
 			        //echo "Good job the output matches what's expected\n";
 				$autoComments->TestCase= $inputCases[$i];
+				$autoComments->PointsSubtracted=0;
 			        $autoComments->Expected= $expOutput;
 			        array_push($comments_Arry, 'Good Job');
 			        $autoComments->Output = $actualOutput;
