@@ -167,7 +167,7 @@ if(isset($_POST["query"])) {
 
 		if ($colonFirstIdx === FALSE || $colonFirstIdx2 === FALSE) {
 			//! the answer string provided is invalid, so handle this error.;
-			echo "you forgot the colon after the def statement\n";
+		//	echo "you forgot the colon after the def statement\n";
                         $pointsOff = floor(.05*$totalPoints);
 			$pointsGiven -= $pointsOff;
 		        $colonPIdx2 = strpos($answer, ")");
@@ -177,12 +177,12 @@ if(isset($_POST["query"])) {
 			
 			if ($colonPIdx !== FALSE) {	
 			  $answer=substr_replace($answer, "):", $colonPIdx, 1);
-			  echo "This is answer now: \n";
-			  echo $answer . PHP_EOL;
+			//  echo "This is answer now: \n";
+			 // echo $answer . PHP_EOL;
 			} else if ($colonPIdx2 !== FALSE) {	
 			  $answer=substr_replace($answer, "):", $colonPIdx2, 1);
-			  echo "This is answer now: \n";
-			  echo $answer . PHP_EOL;
+			 // echo "This is answer now: \n";
+			  //echo $answer . PHP_EOL;
 			}
 		}
 		
@@ -239,13 +239,14 @@ if(isset($_POST["query"])) {
 		}       
 
 	
-		foreach($syntxErrs as &$err){
-		   $tempVar=$err;
-		   $studentFunct->SyntaxError=$tempVar;
-		   echo "This is the Error: $err\n";
+		foreach($syntxErrs as &$err) { 
+		   $studentFunct=(object)['SyntaxError'=>''];
+		   $studentFunct->SyntaxError=$err;
+		   //echo "This is the Error: $err\n";
 		   echo "Here's SyntaxError now: $studentFunct->SyntaxError\n";
-	           var_dump($studentFunct) . PHP_EOL;
-	 	   array_push($finalAutoComment, $studentFunct); 
+	           //var_dump($studentFunct) . PHP_EOL;
+	 	   array_push($finalAutoComment, $studentFunct);
+		   print_r($finalAutoComment) . PHP_EOL;
 		}
 		
 		//echo "This is Json: " . var_dump($jsonTestCases) . PHP_EOL;	
@@ -383,7 +384,7 @@ if(isset($_POST["query"])) {
 				$pointsGiven -= $pointsOff;
 				$autoComments->TestCase=$inputCases[$i];
 				$autoComments->Expected=$expOutput;
-			        array_push($comments_Arry, "Deduct $pointsOff or (25%). Given:" . $actualOutput . " Expected:" . $expOutput. "\n");                             $autoComments->Comments=$comments_Arry;
+			        array_push($comments_Arry, "Deduct $pointsOff or (25%). Given:" . $actualOutput . " Expected:" . $expOutput. "\n");                                                $autoComments->Comments=$comments_Arry;				
 				$autoComments->Output=$actualOutput;
 				array_push($finalAutoComment, $autoComments);
 				$comments_Arry=array();
