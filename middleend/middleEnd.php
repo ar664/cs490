@@ -335,6 +335,7 @@ if(isset($_POST["query"])) {
 			      array_push($finalAutoComment, $jsonAutoComment);
 			      $comments_Arry=array();
 			      $_POST['AutoComments']=$finalAutoComment;
+			      
 			      //print_r($finalAutoComment);
 			      //echo "Output:\n" . print_r($output) . "\n";
 			      //echo "AutoComments: " . $_POST['AutoComments']. PHP_EOL;
@@ -421,11 +422,13 @@ if(isset($_POST["query"])) {
 		
 		// We are done running the test cases so now lets send the points given.
 		   $_POST['PointsGiven']=$pointsGiven;
-		   $json_AutoComments=json_encode($finalAutoComment);
-		   $jsonErr=json_last_error(). PHP_EOL;
+
+		   $json_AutoComments=json_encode($finalAutoComment[0]);
+		   //$jsonErr=json_last_error(). PHP_EOL;
 		   //echo $jsonErr . PHP_EOL;
-		   echo "This JsonFinalAutoComment " . PHP_EOL;  
-		   //echo PHP_EOL;
+		   //echo "This JsonFinalAutoComment " . PHP_EOL;  
+		   //echo PHP_EOL
+		   ;
 		   $_POST['AutoComments']=$json_AutoComments;
 		      
 		   $ch2 = curl_init($url);
