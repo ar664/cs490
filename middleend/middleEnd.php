@@ -153,38 +153,46 @@ if(isset($_POST["query"])) {
 		$parensFirstIdx = stripos($answer, "(");
 		//If student is missing a colon after function declaration
 		//Subtract some points and add the colon
-		$colonFirstIdx = stripos($answer, ") :");
-		$colonFirstIdx2 = stripos($answer, "):");
+		$colonFirstIdx = stripos($answer, "):\n");
+		$colonFirstIdx2 = stripos($answer, ") :\n");
 		// echo $defFirstIdx, " ", $parensFirstIdx;
 		
 		if ($defFirstIdx === FALSE || $parensFirstIdx === FALSE) {
 			//! the answer string provided is invalid, so handle this error.i
-			//echo "you forgot the def statement\n";
+			echo "you forgot the def statement\n";
 			$pointsGiven = 0;
 			array_push($syntxErrs, "answer provided isn't a valid python function, missing def declaration");
 			//echo "function provided isn't a valid Python function missing def declaration Points Given: " . $pointsGiven
 		}
-
-		if ($colonFirstIdx === FALSE || $colonFirstIdx2 === FALSE) {
+	         echo "firstColon: $colonFirstIdx secondColon:$colonFirstIdx2\n";	
+		if ($colonFirstIdx !== FALSE || $colonFirstIdx2 !== TRUE) {
+		    if ($colonFirstIdx === FALSE) {
 			//! the answer string provided is invalid, so handle this error.;
-		//	echo "you forgot the colon after the def statement\n";
+			echo "you forgot the colon after the def statement 1\n";
                         $pointsOff = floor(.05*$totalPoints);
 			$pointsGiven -= $pointsOff;
-		        $colonPIdx2 = strpos($answer, ")");
-		        $colonPIdx =  strpos($answer, ") "); 
+		        $colonPIdx =  strpos($answer, ")\n"); 
 		        array_push($syntxErrs, "answer provided isn't a valid python function, missing ':' after def declaration. Adding Colon after def");
-			
 			if ($colonPIdx !== FALSE) {	
-			  $answer=substr_replace($answer, "):", $colonPIdx, 1);
-			//  echo "This is answer now: \n";
-			 // echo $answer . PHP_EOL;
-			} else if ($colonPIdx2 !== FALSE) {	
-			  $answer=substr_replace($answer, "):", $colonPIdx2, 1);
-			 // echo "This is answer now: \n";
-			  //echo $answer . PHP_EOL;
+			    $answer=substr_replace($answer, "):\n", $colonPIdx, 2);
+			    echo "This is answer now: \n";
+			    echo $answer . PHP_EOL;
+		        }
+		    }else if ($colonFirstIdx2 === FALSE) {
+			//! the answer string provided is invalid, so handle this error.;
+			echo "you forgot the colon after the def statement 2\n";
+                        $pointsOff = floor(.05*$totalPoints);
+			$pointsGiven -= $pointsOff;
+		        $colonPIdx2 = strpos($answer, ") \n");
+		        array_push($syntxErrs, "answer provided isn't a valid python function, missing ':' after def declaration.
+			Adding Colon after def");
+			if ($colonPIdx2 !== FALSE) {			
+			$answer=substr_replace($answer, "):\n", $colonPIdx2, 2);
+			   echo "This is answer now: \n";
+			   echo $answer . PHP_EOL;
 			}
-		}
-		
+		     }
+	        }  
 		// replace the functionName in studentFunction 
 		//if its not FunctName
 		$answerFuncNameStartIdx = $defFirstIdx + 4;
@@ -323,12 +331,13 @@ if(isset($_POST["query"])) {
 			//echo "The current status is: " . $status . PHP_EOL;
 			if ($status == 1) {    
 				//! Handle case where provide answer doesn't successfully run
+			      echo "We hit an error\n";
 			      $pointsGiven = 0;
 			      $_POST['PointsGiven']=$pointsGiven;
 			      $autoComments->TestCase=$inputCases[$i];
 			      $autoComments->Expected=$expOutput;
 			      array_push($comments_Arry, "Program couldn't compile");
-			      $txtDat=implode(" ", $output);
+			      $txtDat=implode("\n", $output);
 			      array_push($comments_Arry, $txtDat);
 			      $autoComments->Comments=$comments_Arry;
 			      $jsonAutoComment=json_encode($autoComments);
@@ -378,7 +387,7 @@ if(isset($_POST["query"])) {
 
 			if ($actualOutput !== $expOutput) {
 				//! Handle case where the test case fails 
-			        //echo "actualOutput:$actualOutput expOutput:$expOutput".PHP_EOL;
+			        echo "actualOutput:$actualOutput expOutput:$expOutput".PHP_EOL;
 				//echo "Taking away 25%\n";
                                 //echo "Output doesn't match the expected one\n";
 				$pointsOff = floor($pointsTaken);
@@ -392,7 +401,7 @@ if(isset($_POST["query"])) {
 				$comments_Arry=array();
 				unset($autoComments);
 			}else{  
-			        //echo "Good job the output matches what's expected\n";
+			        echo "Good job the output matches what's expected\n";
 				$autoComments->TestCase= $inputCases[$i];
 				$autoComments->Points=floor($pointsTaken);
 			        $autoComments->Expected= $expOutput;
@@ -408,7 +417,7 @@ if(isset($_POST["query"])) {
 		    file_put_contents($filepath, $answer, LOCK_EX);
 
 	       }			
-		//echo "The current amount of points outside the Grading Loop is: $pointsGiven points" . PHP_EOL;
+		echo "The current amount of points outside the Grading Loop is: $pointsGiven points" . PHP_EOL;
 		//var_dump($_POST['Points']);
 		//echo "this is the AutoComment\n";
                 //print_r($finalAutoComment);
@@ -422,13 +431,14 @@ if(isset($_POST["query"])) {
 		
 		// We are done running the test cases so now lets send the points given.
 		   $_POST['PointsGiven']=$pointsGiven;
-
-		   $json_AutoComments=json_encode($finalAutoComment[0]);
-		   //$jsonErr=json_last_error(). PHP_EOL;
-		   //echo $jsonErr . PHP_EOL;
+                   echo "encoding the array is the next line\n";
+		   $json_AutoComments=json_encode($finalAutoComment);
+		   $jsonErr=json_last_error_msg(). PHP_EOL;
+		   echo $jsonErr . PHP_EOL;
 		   //echo "This JsonFinalAutoComment " . PHP_EOL;  
 		   //echo PHP_EOL
-		   ;
+		   //echo $json_AutoComments;
+		   var_dump($json_AutoComments);
 		   $_POST['AutoComments']=$json_AutoComments;
 		      
 		   $ch2 = curl_init($url);
