@@ -158,7 +158,7 @@ if(isset($_POST["query"])) {
 		
 		if ($defFirstIdx === FALSE || $parensFirstIdx === FALSE) {
 			//! the answer string provided is invalid, so handle this error.i
-			//echo "you forgot the def statement. Program will not compile 0\n";
+			echo "you forgot the def statement. Program will not compile 0\n";
 			$pointsGiven=0;
 			$studentFunct->SyntaxError="answer provided isn't a valid python function, missing def declaration or left parenthese. Cannot Compile: 0 points given";
 			array_push($finalAutoComment, $studentFunct);
@@ -175,25 +175,26 @@ if(isset($_POST["query"])) {
 		        return;			
 		}
 	        
-		
+			      
 		//echo "firstColon: $colonFirstIdx\n";	
 		if ($colonFirstIdx !== TRUE) {
 		    if ($colonFirstIdx === FALSE) {
 			//! the answer string provided is invalid, so handle this error.;
-			//echo "you forgot the colon after the def statement\n";
+			echo "you forgot the colon after the def statement\n";
                         $pointsOff = floor(.05*$totalPoints);
 			$pointsGiven -= $pointsOff;
+			echo "pointsOff:$pointsOff pointsGiven:$pointsGiven\n";
 		        $colonPIdx =  strpos($answer, ")\n"); 
 		        $colonPIdx2 = strpos($answer, ") \n");
 		        array_push($syntxErrs, "answer provided isn't a valid python function, missing ':' after def declaration. Adding Colon after def");
 			if ($colonPIdx2 !== FALSE) {	
 			    $answer=substr_replace($answer, "):\n", $colonPIdx2, 3);
-			    //echo "This is colon2's answer now: \n";
-			   // echo $answer . PHP_EOL;
+			    echo "This is colon2's answer now: \n";
+			   echo $answer . PHP_EOL;
 		        } else if ($colonPIdx !== FALSE) {			
 			   $answer=substr_replace($answer, "):\n", $colonPIdx, 2);
-			   //echo "This is colon1's answer now: \n";
-			   //echo $answer . PHP_EOL;
+			   echo "This is colon1's answer now: \n";
+			   echo $answer . PHP_EOL;
 			}
 		    }
 	        }  
@@ -335,7 +336,7 @@ if(isset($_POST["query"])) {
 			//echo "The current status is: " . $status . PHP_EOL;
 			if ($status == 1) {    
 				//! Handle case where provide answer doesn't successfully run
-			      //echo "We hit an error\n";
+			      echo "We hit an error\n";
 			      $pointsGiven = 0;
 			      $_POST['PointsGiven']=$pointsGiven;
 			      $autoComments->TestCase=$inputCases[$i];
@@ -427,8 +428,9 @@ if(isset($_POST["query"])) {
 		//echo PHP_EOL;
 
 		//Grading is done output result
-		 //echo "This is the PointsGiven: " . $pointsGiven . "\n";
+		 echo "This is the PointsGiven: " . $pointsGiven . "\n";
 		 if ($pointsGiven < 0) {
+		  echo "the points given are negative so it'll be changed to 0\n";
 			$pointsGiven = 0;
 		}
 		
@@ -472,12 +474,12 @@ if(isset($_POST["query"])) {
 		foreach($examArry as $json_exam=>$exam_Value){
 		    $pointsGiven=$exam_Value->PointsGiven;
 		    //echo "You got $pointsGiven Points on Question $counter++\n";
-		    $finalGrade+=$pointsGiven;
+		    $fGrade+=$pointsGiven;
 		     //echo "Points is now set to: " . $pointsGiven . PHP_EOL;
 		     //echo "FinalGrade is now set to: " . $pointsGiven . PHP_EOL;
 	        }
-                //echo "Student's finalgrade: $finalGrade" . PHP_EOL;
-	        $_POST['FinalGrade']=$finalGrade;
+                echo "StudentExam Graded\n";
+	        $_POST['FinalGrade']=$fGrade;
 		$ch2=curl_init($url);
 		curl_setopt($ch2, CURLOPT_POST, TRUE); // store result in var
 		curl_setopt($ch2, CURLOPT_POSTFIELDS, http_build_query($_POST)); // store result in var
