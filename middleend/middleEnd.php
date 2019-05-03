@@ -154,7 +154,6 @@ if(isset($_POST["query"])) {
 		//If student is missing a colon after function declaration
 		//Subtract some points and add the colon
 		$colonFirstIdx = stripos($answer, "):\n");
-		$colonFirstIdx2 = stripos($answer, ") :\n");
 		// echo $defFirstIdx, " ", $parensFirstIdx;
 		
 		if ($defFirstIdx === FALSE || $parensFirstIdx === FALSE) {
@@ -164,34 +163,26 @@ if(isset($_POST["query"])) {
 			array_push($syntxErrs, "answer provided isn't a valid python function, missing def declaration");
 			//echo "function provided isn't a valid Python function missing def declaration Points Given: " . $pointsGiven
 		}
-	         echo "firstColon: $colonFirstIdx secondColon:$colonFirstIdx2\n";	
-		if ($colonFirstIdx !== FALSE || $colonFirstIdx2 !== TRUE) {
+	         //echo "firstColon: $colonFirstIdx\n";	
+		if ($colonFirstIdx !== TRUE) {
 		    if ($colonFirstIdx === FALSE) {
 			//! the answer string provided is invalid, so handle this error.;
 			echo "you forgot the colon after the def statement 1\n";
                         $pointsOff = floor(.05*$totalPoints);
 			$pointsGiven -= $pointsOff;
 		        $colonPIdx =  strpos($answer, ")\n"); 
+		        $colonPIdx2 = strpos($answer, ") \n");
 		        array_push($syntxErrs, "answer provided isn't a valid python function, missing ':' after def declaration. Adding Colon after def");
 			if ($colonPIdx !== FALSE) {	
 			    $answer=substr_replace($answer, "):\n", $colonPIdx, 2);
 			    echo "This is answer now: \n";
 			    echo $answer . PHP_EOL;
-		        }
-		    }else if ($colonFirstIdx2 === FALSE) {
-			//! the answer string provided is invalid, so handle this error.;
-			echo "you forgot the colon after the def statement 2\n";
-                        $pointsOff = floor(.05*$totalPoints);
-			$pointsGiven -= $pointsOff;
-		        $colonPIdx2 = strpos($answer, ") \n");
-		        array_push($syntxErrs, "answer provided isn't a valid python function, missing ':' after def declaration.
-			Adding Colon after def");
-			if ($colonPIdx2 !== FALSE) {			
-			$answer=substr_replace($answer, "):\n", $colonPIdx2, 2);
+		        } else if ($colonPIdx2 !== FALSE) {			
+			   $answer=substr_replace($answer, "):\n", $colonPIdx2, 3);
 			   echo "This is answer now: \n";
 			   echo $answer . PHP_EOL;
 			}
-		     }
+		    }
 	        }  
 		// replace the functionName in studentFunction 
 		//if its not FunctName
