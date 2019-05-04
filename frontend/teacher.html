@@ -184,7 +184,7 @@
         <div class="tab">
             <button class="tablinks" onclick="changePage(event, 'qAdd')">Add a Question</button>
             <button class="tablinks" onclick="changePage(event, 'exEdit')">Edit Exam</button>
-            <button class="tablinks" onclick="changePage(event, 'gradeExam')">Grade Exam</button>
+            <button class="tablinks" onclick="changePage(event, 'gradeExam')">Review Exam</button>
         </div>
 
         <!-- Add a Question Page-->
@@ -235,15 +235,15 @@
                 </thead>
                 <tbody id="examQuestions"></tbody>
             </table>
-            <button onclick="editExam()" class="general">Update Exam</button>
+            <!-- <button onclick="editExam()" class="general">Update Exam</button> -->
             <p id="sysMsg1" style="padding-top: 4rem;"></p>
             <p id="stat"></p>
         </div>
 
         <!-- Grading Page-->
-        <div class="tabcontent centered" id="gradeExam" style="display:none">
+        <div class="tabcontent centered" id="gradeExam" style="display:none;">
             <div id="examStatus">Exam not completed by student yet.</div>
-            <button class="general" onclick="teachExamView('grading')">Finalize Points</button>
+            <button class="general" onclick="editExam()">Release Exam</button>
             <button class="general" onclick="resetExam()">Reset Exam</button>
             <p id="sysMsg2" style="padding-top: 4rem;"></p>
         </div>

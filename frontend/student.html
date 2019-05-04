@@ -5,10 +5,14 @@
         <h1>Final Exam</h1>
         <style type="text/css">
             body, html {
-                height: 100%;
+                font-family: 'Didact Gothic', sans-serif;
+                font-size: 1.5rem;
                 text-align: center;
                 padding-left: 5rem;
                 padding-right: 5rem;
+                display: flex;
+                flex-direction: column;
+                justify-content: center;
             }
             table {
                 border: 0.01rem solid black;
@@ -20,26 +24,26 @@
             textarea {
                 resize: none;
             }
+            .nice {
+                border:none;
+                outline: none;
+                background-color: green;
+                color: white;
+                font-size: 1.25rem;
+                transition: 0.3s;
+            }
+            .nice:hover {
+                background-color: darkred;
+                transition: 0.3s;
+            }
         </style>
     </head>
     <body onload="loadExam()">
+        <link href="https://fonts.googleapis.com/css?family=Didact+Gothic" rel="stylesheet">
         <script src="main.js"></script>
         <div id="fullExam">Exam not posted. Try again later.</div>
-        <h1 id="subMsg" style="visibility: hidden">Done? Ready to Submit? (Remember to Double Check your work!)</h1>
-        <button onclick="submitExam()" style="visibility: hidden" id="studentSubmit">Submit Exam</button>
-        <table name="questionArray" style="visibility: hidden" id="qTable">
-            <thead>
-                <tr>
-                    <th>QUESTION</th>
-                    <th>POINTS</th>
-                    <th>POINTSGIVEN</th>
-                    <th>AUTOCOMMENTS</th>
-                    <th>TEACHERCOMMENTS</th>
-                </tr>
-            </thead>
-            <tbody id="qArray">
-            </tbody>
-        </table><br>
+        <h1 id="subMsg" style="visibility: hidden; font-size: 1.25rem">Done? Ready to Submit? (Remember to Double Check your work!)</h1>
+        <button class="nice" onclick="submitExam()" style="visibility: hidden" id="studentSubmit">Submit Exam</button>
 
         <h2 id="system"></h2>
     </body>

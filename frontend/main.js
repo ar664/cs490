@@ -238,7 +238,7 @@ function teachExamView(mode) {
                         var curQText = document.createTextNode("Question " + (eqNum + 1));s
                         curQ.appendChild(curQText);
                         examView.appendChild(curQ);
-
+                        console.log(exArray[eqNum]);
                         var curAns = document.createElement("P");
                         curAns.style.border = "0.1rem solid black";
                         curAns.className = "answer";
@@ -252,29 +252,122 @@ function teachExamView(mode) {
                         curAns.appendChild(curAnsText);
                         examView.appendChild(curAns);
 
-                        var curPts = document.createElement("INPUT");
-                        curPts.type = "text";
-                        curPts.style.width = "1.5rem";
-                        curPts.value = exArray[eqNum].PointsGiven;
-                        curPts.id = "newPoints" + eqNum;
+                        var curPts = document.createElement("P");
+                        var curPtsText = document.createTextNode(exArray[eqNum].PointsGiven + " / " + exArray[eqNum].Points);
+                        curPts.appendChild(curPtsText);
                         examView.appendChild(curPts);
 
-                        var possPts = document.createElement("P");
-                        possPts.style.display = "inline-block";
-                        var possPtsText = document.createTextNode(" / " + exArray[eqNum].Points);
-                        possPts.appendChild(possPtsText);
-                        examView.appendChild(possPts);
+                        var autoTable = document.createElement("TABLE");
+                        autoTable.style.border = "0.01rem solid black";
+                        autoTable.style.left = "2rem;"
+                        var tableHead = document.createElement("THEAD");
+                        var headerRow = document.createElement("TR");
+                        headerRow.style.border = "0.01rem solid black";
+    
+                        var hItemDesc = document.createElement("TH");
+                        hItemDesc.style.border = "0.01rem solid black";
+                        hItemDesc.style.width = "20rem";
+                        var DescLabel = document.createTextNode("Autocomment");
+                        hItemDesc.appendChild(DescLabel);
+                        headerRow.appendChild(hItemDesc);
+    
+                        var hActual = document.createElement("TH");
+                        hActual.style.border = "0.01rem solid black";
+                        var actLabel = document.createTextNode("Actual\nOutput");
+                        hActual.appendChild(actLabel);
+                        headerRow.appendChild(hActual);
+    
+                        var hPoints = document.createElement("TH");
+                        hPoints.style.border = "0.01rem solid black";
+                        var pointLabel = document.createTextNode("Points");
+                        hPoints.appendChild(pointLabel);
+                        headerRow.appendChild(hPoints);
+                        
+                        tableHead.appendChild(headerRow);
+                        autoTable.appendChild(tableHead);
+                        var tableBody = document.createElement("TBODY");
+                        tableBody.id = "body" + exArray[eqNum].QuestionID;
+                        tableBody.style.border = "0.01rem solid black";
 
-                        var autoComms = document.createElement("DIV");
-                        var autoCommsText = document.createTextNode(exArray[eqNum].AutoComments);
-                        autoComms.appendChild(autoCommsText);
-                        examView.appendChild(autoComms);
+                        console.log(exArray[eqNum].QuestionID + " " + exArray[eqNum].AutoComments);
+                        var autoArray = JSON.parse(exArray[eqNum].AutoComments);
+                        for(x = 0; x < autoArray.length; x++) {
+                            var item = document.createElement("TR");
+                            item.style.border = "0.01rem solid black";
+                            var itemDesc = document.createElement("TD");
+                            itemDesc.style.border = "0.01rem solid black";
+                            if(autoArray[x].TestCaseID) {
+                                var t1 = document.createElement("P");
+                                var t1Text = document.createTextNode("Test Case: ");
+                                t1.appendChild(t1Text);
+                                itemDesc.appendChild(t1);
+                                var tcElement = document.createElement("DIV");
+                                tcElement.style.marginTop = "-1rem";
+                                var tcText = document.createTextNode(autoArray[x].TestCase)
+                                tcElement.appendChild(tcText);
+                                itemDesc.appendChild(tcElement);
+                                var t2 = document.createElement("P");
+                                var t2Text = document.createTextNode("Expected: ");
+                                t2.appendChild(t2Text);
+                                itemDesc.appendChild(t2);
+                                var exp = document.createElement("DIV");
+                                exp.style.marginTop = "-1rem";
+                                var expText = document.createTextNode(autoArray[x].Expected);
+                                exp.appendChild(expText);
+                                itemDesc.appendChild(exp);
+                                item.id = "testcase";
+                            } else {
+                                var itemDescText = document.createTextNode(autoArray[x].SyntaxError);
+                                itemDesc.appendChild(itemDescText);
+                                item.id = "syntax";
+                            }
+                            item.appendChild(itemDesc);
+
+                            var actual = document.createElement("TD");
+                            actual.style.border = "0.01rem solid black";
+                            var outputVal;
+                            if(autoArray[x].Output) {
+                                outputVal = autoArray[x].Output;
+                            } else {
+                                outputVal = "N/A";
+                            }
+                            var actualText = document.createTextNode(outputVal);
+                            actual.appendChild(actualText);
+                            item.appendChild(actual);
+
+                            var points = document.createElement("TD");
+                            points.style.border = "0.01rem solid black";
+                            var sign, pointVal;
+                            if(autoArray[x].Points) {
+                                pointVal = autoArray[x].Points;
+                                sign = "Gained ";
+                            } else if(autoArray[x].PointsTken) {
+                                pointVal = autoArray[x].PointsTken;
+                                sign = "Deducted ";
+                            } else {
+                                pointVal = "0";
+                                sign = "";
+                            }
+                            var pointSign = document.createTextNode(sign);
+                            points.appendChild(pointSign);
+                            var pointsValue = document.createElement("INPUT");
+                            pointsValue.id = "q" + exArray[eqNum].QuestionID + "item" + x;
+                            pointsValue.type = "text";
+                            pointsValue.value = pointVal;
+                            points.appendChild(pointsValue);
+                            item.appendChild(points);
+
+                            tableBody.appendChild(item);
+                        }
+                        autoTable.appendChild(tableBody);
+                        examView.appendChild(autoTable);
 
                         var teachFB = document.createElement("TEXTAREA");
+                        teachFB.value = exArray[eqNum].TeacherComments;
                         teachFB.placeholder = "Any additional feedback";
                         teachFB.cols = "30";
                         teachFB.rows = "5";
-                        teachFB.id = "tComments" + eqNum;
+                        teachFB.id = "tComments" + exArray[eqNum].QuestionID;
                         examView.appendChild(teachFB);
                     }
                 }
@@ -576,11 +669,12 @@ function loadExam() {
     xhttp.onreadystatechange = function() {
         if(this.readyState == 4 && this.status == 200) {
             var examJSON = this.responseText;
+            //console.log(examJSON);
             var examResults;
             try {
                 examResults = JSON.parse(examJSON);
             } catch(e) {
-                console.log("JSON errror: " + examJSON);
+                console.log("JSON error somewhere");
                 return;
             }
             var examArray = examResults.Exam;
@@ -588,48 +682,128 @@ function loadExam() {
             document.getElementById("fullExam").innerHTML = "EXAM 1";
 
             //Check if the exam has been graded
-            if(examArray[0].AutoComments != "") {
-                document.getElementById("qTable").style.visibility = "visible";
-                var questionTable = document.getElementById("qArray");
+            if(examArray[0].TeacherComments != "") {
+                //document.getElementById("qTable").style.visibility = "visible";
+                var examPage = document.getElementById("fullExam");
+                examPage.innerHTML = "";
                 for(n = 0; n < examArray.length-1; n++)
                 {
                     var questionID = examArray[n].QuestionID;
                     var questionText = questionArray[n].Question;
+                    var questionFName = questionArray[n].FunctionName;
+                    var questionAnswer = examArray[n].Answer;
                     var questionPoints = examArray[n].Points;
                     var questionPointsGiven = examArray[n].PointsGiven;
                     var questionAutoComments = examArray[n].AutoComments;
+                    console.log(questionAutoComments);
                     var questionTeacherComments = examArray[n].TeacherComments;
 
-                    var row = document.createElement("TR");
-                    row.id = questionID;
+                    var curQ = document.createElement("DIV");
+                    var curQText = document.createTextNode((n+1) + ") " + questionText);
+                    curQ.appendChild(curQText);
+                    examPage.appendChild(curQ);
 
-                    var rQuestion = document.createElement("TD");
-                    var rQuestionContent = document.createTextNode((n+1) + ") " + questionText);
-                    rQuestion.appendChild(rQuestionContent);
-                    row.appendChild(rQuestion);
+                    var ans = document.createElement("DIV");
+                    ans.style.whiteSpace = "pre";
+                    ans.style.textAlign = "left";
+                    ans.style.border = "0.01rem solid black";
+                    var ansText = document.createTextNode(questionAnswer);
+                    ans.appendChild(ansText);
+                    examPage.appendChild(ans);
 
-                    var rPoints = document.createElement("TD");
-                    var rPointsContent = document.createTextNode(questionPoints);
-                    rPoints.appendChild(rPointsContent);
-                    row.appendChild(rPoints);
+                    var autoTable = document.createElement("TABLE");
+                    autoTable.style.border = "0.01rem solid black";
+                    var tableHead = document.createElement("THEAD");
+                    var headerRow = document.createElement("TR");
+                    headerRow.style.border = "0.01rem solid black";
 
-                    var rPointsGiven = document.createElement("TD");
-                    var rPointsGivenContent = document.createTextNode(questionPointsGiven);
-                    rPointsGiven.appendChild(rPointsGivenContent);
-                    row.appendChild(rPointsGiven);
+                    var hItemDesc = document.createElement("TH");
+                    hItemDesc.style.border = "0.01rem solid black";
+                    var DescLabel = document.createTextNode("Autocomment");
+                    hItemDesc.appendChild(DescLabel);
+                    headerRow.appendChild(hItemDesc);
 
-                    var rAutoComments = document.createElement("TD");
-                    var rAutoCommentsContent = document.createTextNode(questionAutoComments);
-                    rAutoComments.appendChild(rAutoCommentsContent);
-                    row.appendChild(rAutoComments);
+                    var hActual = document.createElement("TH");
+                    hActual.style.border = "0.01rem solid black";
+                    var actLabel = document.createTextNode("Actual\nOutput");
+                    hActual.appendChild(actLabel);
+                    headerRow.appendChild(hActual);
 
-                    var rTeacherComments = document.createElement("TD");
-                    var rTeacherCommentsContent = document.createTextNode(questionTeacherComments);
-                    rTeacherComments.appendChild(rTeacherCommentsContent);
-                    row.appendChild(rTeacherComments);
+                    var hPoints = document.createElement("TH");
+                    hPoints.style.border = "0.01rem solid black";
+                    var pointLabel = document.createTextNode("Points");
+                    hPoints.appendChild(pointLabel);
+                    headerRow.appendChild(hPoints);
+                    
+                    tableHead.appendChild(headerRow);
+                    autoTable.appendChild(tableHead);
+                    var tableBody = document.createElement("TBODY");
+                    tableBody.style.border = "0.01rem solid black";
+                    
+                    console.log(questionID + " " + questionAutoComments);
+                    var autoArray = JSON.parse(questionAutoComments);
+                    for(x = 0; x < autoArray.length; x++) {
+                        var item = document.createElement("TR");
+                        item.style.border = "0.01rem solid black";
+                        var itemDesc = document.createElement("TD");
+                        itemDesc.style.border = "0.01rem solid black";
+                        var textContent;
+                        if(autoArray[x].TestCaseID) {
+                            textContent = questionFName + "(" + autoArray[x].TestCase + ") => " + autoArray[x].Expected;
+                        } else {
+                            textContent = autoArray[x].SyntaxError;
+                        }
+                        var itemDescText = document.createTextNode(textContent);
+                        itemDesc.appendChild(itemDescText);
+                        item.appendChild(itemDesc);
 
-                    questionTable.appendChild(row);
+                        var actual = document.createElement("TD");
+                        actual.style.border = "0.01rem solid black";
+                        var outputVal;
+                        if(autoArray[x].Output) {
+                            outputVal = autoArray[x].Output;
+                        } else {
+                            outputVal = "N/A";
+                        }
+                        var actualText = document.createTextNode(outputVal);
+                        actual.appendChild(actualText);
+                        item.appendChild(actual);
 
+                        var points = document.createElement("TD");
+                        points.style.border = "0.01rem solid black";
+                        var pointVal;
+                        if(autoArray[x].Points) {
+                            pointVal = "+" + autoArray[x].Points;
+                        } else {
+                            pointVal = "-" + autoArray[x].PointsTken;
+                        }
+                        var pointsValue = document.createTextNode(pointVal);
+                        points.appendChild(pointsValue);
+                        item.appendChild(points);
+
+                        tableBody.appendChild(item);
+                    }
+                    autoTable.appendChild(tableBody);
+                    examPage.appendChild(autoTable);
+
+                    var qPts = document.createElement("DIV");
+                    qPts.style.border = "0.01rem solid black";
+                    var ptVal = document.createTextNode("Total for Question " + (n+1) + ": " + questionPointsGiven + " / " + questionPoints);
+                    qPts.appendChild(ptVal);
+                    examPage.appendChild(qPts);
+
+                    var tCommsLabel = document.createElement("H1");
+                    tCommsLabel.style.fontSize = "1.25rem";
+                    var title = document.createTextNode("Teacher Comments:");
+                    tCommsLabel.appendChild(title);
+                    examPage.appendChild(tCommsLabel);
+
+                    var teacherComments = document.createElement("P");
+                    teacherComments.style.border = "0.01rem solid black";
+                    teacherComments.style.marginBottom = "2rem";
+                    var tCommsText = document.createTextNode(questionTeacherComments);
+                    teacherComments.appendChild(tCommsText);
+                    examPage.appendChild(teacherComments);
                 }
 
                 // Getting the Final Calculated Grade from DB
@@ -639,9 +813,9 @@ function loadExam() {
                     if(this.readyState == 4 && this.status == 200) {
                         var finalGrade = this.responseText;
                         var total = document.createElement("H4");
-                        var totalValue = document.createTextNode("Total: " + finalGrade);
+                        var totalValue = document.createTextNode("Final Grade: " + finalGrade);
                         total.appendChild(totalValue);
-                        questionTable.appendChild(total);
+                        examPage.appendChild(total);
                     }
                 }
                 innerReq.open("POST","betaFrontCurl.php",true);
@@ -649,6 +823,8 @@ function loadExam() {
                 innerReq.send("query=GetFinalGrade");
 
 
+            } else if(examArray[0].AutoComments !== "") {
+                document.getElementById("fullExam").innerHTML = "Test Not Graded Yet. Come back later.";            
             } else if(examArray.length > 0) {
                 document.getElementById("studentSubmit").style.visibility = "visible";
                 document.getElementById("subMsg").style.visibility = "visible";
@@ -722,10 +898,48 @@ function submitExam() {
 function editExam() {
     var massOfData = document.getElementById("examQuestions");
     var elements = massOfData.children;
+    var i, tc, curPts;
     for(let eQuestion of elements) {
         var xhttp = new XMLHttpRequest();
-        var updateReq = "query=UpdateExamQuestion&QuestionID=" + eQuestion.id + + "&Points=" + eQuestion.children[2].firstElementChild.value;
-        console.log(eQuestion.id + " " + eQuestion.children[2].firstElementChild.value);
+        var curTeachComms = document.getElementById("tComments" + eQuestion.id).value;
+        var updateReq = "query=UpdateExamQuestion&QuestionID=" + eQuestion.id + "&AutoComments=";
+        var curTable = document.getElementById("body" + eQuestion.id).children;
+        var autoJSON = [];
+        i = 0;
+        tc = 1;
+        curPts = 0;
+        for(let curItem of curTable) {
+            var curJSON = new Object();
+            console.log(curItem.children[0].innerHTML);
+            var pt = document.getElementById("q" + eQuestion.id + "item" + i).value;
+            if(curItem.id == "syntax") {
+                curJSON.SyntaxError = curItem.children[0].innerHTML;
+                curJSON.PointsTken = document.getElementById("q" + eQuestion.id + "item" + i).value;
+                curPts -= parseInt(pt);
+            } else if(curItem.id == "testcase") {
+                curJSON.TestCaseID = tc;
+                tc++;
+                curJSON.TestCase = curItem.children[0].children[1].innerHTML;
+                curJSON.Points = document.getElementById("q" + eQuestion.id + "item" + i).value;
+                curJSON.Expected = curItem.children[0].children[3].innerHTML;
+                curJSON.Output = curItem.children[1].innerHTML;
+                curPts += parseInt(pt);
+            } 
+            else {
+                console.log(curItem);
+            }
+            i++;
+            autoJSON.push(curJSON);
+        }
+        console.log(autoJSON);
+        updateReq += encodeURIComponent(JSON.stringify(autoJSON)) + "&PointsGiven=" + encodeURIComponent(curPts) + "&TeacherComments=";
+        if(curTeachComms) {
+            updateReq += encodeURIComponent(curTeachComms);
+        } else {
+            updateReq += encodeURIComponent("No Comment");
+        }
+
+        console.log(eQuestion.id + " " + document.getElementById("tComments" + eQuestion.id).value);
         xhttp.onreadystatechange = function() {
             if(this.readyState == 4 && this.status == 200) {
                 var strJSON = this.responseText;
